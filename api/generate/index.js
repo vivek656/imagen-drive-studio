@@ -56,9 +56,8 @@ function getDimensions(aspectRatio) {
   }
 }
 
-async function generateFreeImage(prompt, aspectRatio, model = "flux") {
+async function generateFreeImage(prompt, rawPrompt, aspectRatio, model = "flux") {
   const { width, height } = getDimensions(aspectRatio);
-  const encodedPrompt = encodeURIComponent(prompt);
   const seed = Math.floor(Math.random() * 1000000);
 
   const modelMap = {
@@ -69,13 +68,34 @@ async function generateFreeImage(prompt, aspectRatio, model = "flux") {
   };
   const targetModel = modelMap[model] || "flux";
 
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=${targetModel}&seed=${seed}&nologo=true`;
+  // Attempt 1: Try enhanced prompt
+  let imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=${width}&height=${height}&model=${targetModel}&seed=${seed}&nologo=true`;
 
-  const response = await fetch(imageUrl, {
+  let response = await fetch(imageUrl, {
     headers: {
       "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
   });
+
+  // Attempt 2: If enhanced prompt failed (e.g. 402/400), try clean raw prompt
+  if (!response.ok && rawPrompt && prompt !== rawPrompt) {
+    imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(rawPrompt)}?width=${width}&height=${height}&model=${targetModel}&seed=${seed}&nologo=true`;
+    response = await fetch(imageUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      }
+    });
+  }
+
+  // Attempt 3: If still rejected, fallback to turbo model with raw prompt
+  if (!response.ok) {
+    imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(rawPrompt || prompt)}?width=${width}&height=${height}&model=turbo&seed=${seed}&nologo=true`;
+    response = await fetch(imageUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      }
+    });
+  }
 
   if (!response.ok) {
     throw new Error(`Inference error: HTTP ${response.status}`);
@@ -131,7 +151,7 @@ export default async function handler(req, res) {
       }
 
       const enhancedPrompt = enhancePrompt(prompt, style);
-      const imageBytes = await generateFreeImage(enhancedPrompt, aspectRatio, model);
+      const imageBytes = await generateFreeImage(enhancedPrompt, prompt, aspectRatio, model);
 
       let driveResult = null;
       const cookies = parseCookies(req);
