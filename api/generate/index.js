@@ -58,6 +58,31 @@ function getDimensions(aspectRatio) {
   }
 }
 
+async function synthesizeWithGemini(rawPrompt, apiKey) {
+  if (!apiKey) return rawPrompt;
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{
+            text: `Act as a world-class prompt engineer for FLUX.1. Expand this concept into a breathtaking, highly-detailed photographic prompt describing scene composition, lighting, camera lens, textures, and color grading. Output ONLY the raw descriptive prompt, maximum 45 words: "${rawPrompt}"`
+          }]
+        }]
+      })
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const synthText = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (synthText) return synthText.trim().replace(/^"|"$/g, "");
+    }
+  } catch (e) {
+    console.warn("Gemini prompt synthesis error:", e.message);
+  }
+  return rawPrompt;
+}
+
 async function generateFreeImage(prompt, rawPrompt, aspectRatio, model = "flux") {
   const { width, height } = getDimensions(aspectRatio);
   const seed = Math.floor(Math.random() * 1000000);
@@ -66,6 +91,10 @@ async function generateFreeImage(prompt, rawPrompt, aspectRatio, model = "flux")
     "flux": "flux",
     "flux-realism": "flux-realism",
     "flux-anime": "flux-anime",
+    "midjourney": "midjourney",
+    "flux-3d": "flux-3d",
+    "gemini-synth": "flux",
+    "imagen-3": "flux",
     "turbo": "turbo"
   };
   const targetModel = modelMap[model] || "flux";
@@ -152,7 +181,11 @@ export default async function handler(req, res) {
         return;
       }
 
-      const enhancedPrompt = enhancePrompt(prompt, style);
+      let effectivePrompt = prompt;
+      if (model === "gemini-synth") {
+        effectivePrompt = await synthesizeWithGemini(prompt, process.env.GEMINI_API_KEY);
+      }
+      const enhancedPrompt = (model === "gemini-synth" || style === "raw") ? effectivePrompt : enhancePrompt(effectivePrompt, style);
       const imageBytes = await generateFreeImage(enhancedPrompt, prompt, aspectRatio, model);
 
       let driveResult = null;

@@ -818,11 +818,15 @@
 
             <!-- Parameter Chips (for Image Generation) -->
             <div class="param-chips-group" id="imageParamsRow">
-              <select id="modelDropdown" class="param-dropdown">
-                <option value="flux">⚡ FLUX.1 (8K Photoreal)</option>
-                <option value="flux-realism">📸 Realism</option>
-                <option value="flux-anime">🎨 Anime / Concept</option>
-                <option value="turbo">🚀 Fast Turbo</option>
+              <select id="modelDropdown" class="param-dropdown" title="Select Free Image Generation Model">
+                <option value="flux">⚡ FLUX.1 (8K Photoreal - Free)</option>
+                <option value="flux-realism">📸 FLUX Realism (Photorealistic)</option>
+                <option value="flux-anime">🎨 Anime / Concept Art</option>
+                <option value="midjourney">🌌 Midjourney Artistic Style</option>
+                <option value="flux-3d">🔮 3D Render (Unreal Engine 5)</option>
+                <option value="gemini-synth">✨ Gemini 3 Prompt Synthesizer + FLUX</option>
+                <option value="imagen-3">🎨 Google Imagen 3 (Free Tier / Fallback)</option>
+                <option value="turbo">🚀 Fast Turbo (Draft Mode)</option>
               </select>
 
               <select id="styleDropdown" class="param-dropdown">
@@ -839,6 +843,17 @@
                 <option value="9:16">9:16 Portrait</option>
                 <option value="4:3">4:3 Standard</option>
                 <option value="3:4">3:4 Poster</option>
+              </select>
+            </div>
+
+            <!-- Parameter Chips (for Chat Mode) -->
+            <div class="param-chips-group" id="chatParamsRow" style="display: none;">
+              <select id="chatModelDropdown" class="param-dropdown" title="Select Free Chat / Reasoning Model">
+                <option value="gemini-2.5-flash">🌟 Gemini 2.5 Flash (Google AI Studio Free)</option>
+                <option value="gemini-3-flash-preview">⚡ Gemini 3 Flash Preview (Google AI Studio Free)</option>
+                <option value="gemini-3.6-flash">🚀 Gemini 3.6 Flash (AI Studio Preview)</option>
+                <option value="gpt-4o-mini">🤖 ChatGPT / GPT-4o Mini (Free Unlimited)</option>
+                <option value="deepseek-r1">🧠 DeepSeek R1 (Reasoning Free)</option>
               </select>
             </div>
 
@@ -983,8 +998,10 @@
     const modeImageBtn = document.getElementById("modeImageBtn");
     const modeChatBtn = document.getElementById("modeChatBtn");
     const imageParamsRow = document.getElementById("imageParamsRow");
+    const chatParamsRow = document.getElementById("chatParamsRow");
 
     const modelDropdown = document.getElementById("modelDropdown");
+    const chatModelDropdown = document.getElementById("chatModelDropdown");
     const styleDropdown = document.getElementById("styleDropdown");
     const ratioDropdown = document.getElementById("ratioDropdown");
 
@@ -1019,12 +1036,14 @@
         modeImageBtn.classList.add("active");
         modeChatBtn.classList.remove("active");
         imageParamsRow.style.display = "flex";
+        if (chatParamsRow) chatParamsRow.style.display = "none";
         promptInput.placeholder = "Describe an image to generate with FLUX.1...";
       } else {
         modeChatBtn.classList.add("active");
         modeImageBtn.classList.remove("active");
         imageParamsRow.style.display = "none";
-        promptInput.placeholder = "Ask Gemini anything, brainstorm ideas, write stories...";
+        if (chatParamsRow) chatParamsRow.style.display = "flex";
+        promptInput.placeholder = "Ask Gemini, DeepSeek, or ChatGPT anything...";
       }
     }
 
@@ -1526,14 +1545,16 @@
           `;
         }
       } else {
-        // TEXT CHAT CONVERSATION (Gemini)
+        // TEXT CHAT CONVERSATION (Gemini / Free LLMs)
+        const selectedChatModel = chatModelDropdown ? chatModelDropdown.value : "gemini-2.5-flash";
+        const selectedChatName = chatModelDropdown ? chatModelDropdown.options[chatModelDropdown.selectedIndex].text.split("(")[0].trim() : "Gemini";
         const aiBubble = document.createElement("div");
         aiBubble.className = "chat-bubble ai";
         aiBubble.innerHTML = `
           <div class="bubble-avatar">✨</div>
           <div class="ai-text-card" style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 14px; height: 14px; border: 2px solid #c58af9; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-            <span style="font-size: 0.85rem; color: var(--text-secondary);">Gemini is thinking...</span>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">${selectedChatName} is thinking...</span>
           </div>
         `;
         chatScroller.appendChild(aiBubble);
@@ -1545,7 +1566,8 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               message: prompt,
-              messages: session.messages
+              messages: session.messages,
+              model: selectedChatModel
             })
           });
 
@@ -1553,14 +1575,19 @@
           if (!res.ok || data.error) throw new Error(data.error || "Chat failed");
 
           const replyText = data.reply || "Done!";
+          const activeEngine = data.model || selectedChatName;
           aiBubble.innerHTML = `
             <div class="bubble-avatar">✨</div>
-            <div class="ai-text-card">${escapeHtml(replyText)}</div>
+            <div class="ai-text-card">
+              <div style="margin-bottom: 6px;"><span class="tag-pill" style="font-size: 0.7rem; background: rgba(168, 199, 250, 0.15); color: #a8c7fa; padding: 2px 7px; border-radius: 10px;">${activeEngine}</span></div>
+              ${escapeHtml(replyText)}
+            </div>
           `;
 
           session.messages.push({
             type: "ai",
-            text: replyText
+            text: replyText,
+            model: activeEngine
           });
           saveAllSessions();
 

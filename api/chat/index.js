@@ -20,28 +20,54 @@ export default async function handler(req, res) {
 
       const apiKey = process.env.GEMINI_API_KEY;
 
-      // Prepare conversation contents for Gemini
-      const contents = [];
-      const recentMessages = messages.slice(-10);
-
-      for (const m of recentMessages) {
-        if (m.type === "user" && m.prompt) {
-          contents.push({ role: "user", parts: [{ text: m.prompt }] });
-        } else if (m.type === "ai" && m.text) {
-          contents.push({ role: "model", parts: [{ text: m.text }] });
-        }
-      }
-
-      if (contents.length === 0 || contents[contents.length - 1].parts[0].text !== message) {
-        contents.push({ role: "user", parts: [{ text: message }] });
-      }
-
-      const candidateModels = [model, "gemini-3-flash-preview", "gemini-2.5-flash"];
       let replyText = "";
       let usedModel = "";
 
-      if (apiKey) {
+      // 1. If user specifically requested free OpenAI (ChatGPT) or DeepSeek
+      if (model === "openai" || model === "gpt-4o-mini") {
+        try {
+          const pollRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(message)}?model=openai`);
+          if (pollRes.ok) {
+            replyText = await pollRes.text();
+            usedModel = "ChatGPT (OpenAI Free)";
+          }
+        } catch (_) {}
+      } else if (model === "deepseek-r1" || model === "deepseek") {
+        try {
+          const pollRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(message)}?model=deepseek`);
+          if (pollRes.ok) {
+            replyText = await pollRes.text();
+            usedModel = "DeepSeek R1 (Free)";
+          }
+        } catch (_) {}
+      }
+
+      // 2. Otherwise try Google's Gemini Models
+      if (!replyText && apiKey) {
+        const contents = [];
+        const recentMessages = messages.slice(-10);
+
+        for (const m of recentMessages) {
+          if (m.type === "user" && m.prompt) {
+            contents.push({ role: "user", parts: [{ text: m.prompt }] });
+          } else if (m.type === "ai" && m.text) {
+            contents.push({ role: "model", parts: [{ text: m.text }] });
+          }
+        }
+
+        if (contents.length === 0 || contents[contents.length - 1].parts[0].text !== message) {
+          contents.push({ role: "user", parts: [{ text: message }] });
+        }
+
+        const candidateModels = [
+          model,
+          "gemini-2.5-flash",
+          "gemini-3-flash-preview",
+          "gemini-3.6-flash"
+        ].filter(Boolean);
+
         for (const targetModel of candidateModels) {
+          if (targetModel.startsWith("openai") || targetModel.startsWith("gpt") || targetModel.startsWith("deepseek")) continue;
           try {
             const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${targetModel}:generateContent?key=${apiKey}`;
             const controller = new AbortController();
@@ -52,6 +78,9 @@ export default async function handler(req, res) {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 contents,
+                generationConfig: {
+                  thinkingConfig: { thinkingBudget: 0 }
+                },
                 systemInstruction: {
                   parts: [{
                     text: "You are an intelligent, creative AI assistant inside Imagen & Gemini Studio. You help users with conversation, brainstorming, writing, and crafting rich, vivid image prompts. Be helpful, concise, and friendly. If a user asks you to create or generate an image, give them an inspiring prompt and remind them they can hit the Image button to render it."
@@ -76,15 +105,19 @@ export default async function handler(req, res) {
         }
       }
 
-      // Fallback if all Gemini models failed or no key
+      // 3. Fallback to free OpenAI endpoint if Gemini had any issue or no key
       if (!replyText) {
-        const pollRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(message)}`);
-        if (pollRes.ok) {
-          replyText = await pollRes.text();
-          usedModel = "fallback-text";
-        } else {
-          replyText = "I'm here to chat or generate images! Type any question or switch to Image mode to generate high-res art.";
-        }
+        try {
+          const pollRes = await fetch(`https://text.pollinations.ai/${encodeURIComponent(message)}?model=openai`);
+          if (pollRes.ok) {
+            replyText = await pollRes.text();
+            usedModel = "ChatGPT (OpenAI Free Fallback)";
+          }
+        } catch (_) {}
+      }
+
+      if (!replyText) {
+        replyText = "I'm here to chat or generate images! Type any question or switch to Image mode to generate high-res art.";
       }
 
       res.writeHead(200, {
