@@ -786,6 +786,7 @@
           statusLabel.textContent = "Drive Connected";
           connectBtn.style.display = "none";
           disconnectBtn.style.display = "inline";
+          syncDriveHistory();
         } else {
           statusDot.style.background = "#f59e0b";
           statusDot.style.boxShadow = "0 0 10px #f59e0b";
@@ -861,11 +862,33 @@
       }
     }
 
-    function saveHistory(history) {
+    function saveHistory(history, syncToDrive = true) {
       try {
-        // Keep last 40 messages to prevent storage overflow
-        const trimmed = history.slice(-40);
+        const trimmed = history.slice(-50);
         localStorage.setItem("ai_chat_history", JSON.stringify(trimmed));
+
+        if (syncToDrive) {
+          // Send lightweight history to Drive (strip large base64 strings if driveFileId exists)
+          const drivePayload = trimmed.map(msg => {
+            if (msg.type === "ai" && msg.driveFileId) {
+              return {
+                type: msg.type,
+                prompt: msg.prompt,
+                ratio: msg.ratio,
+                model: msg.model,
+                driveFileId: msg.driveFileId,
+                createdAt: msg.createdAt || Date.now()
+              };
+            }
+            return msg;
+          });
+
+          fetch("/api/drive/history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ history: drivePayload })
+          }).catch(err => console.warn("Drive sync error:", err));
+        }
       } catch (e) {
         console.warn("Storage save error", e);
       }
@@ -891,11 +914,13 @@
             ? `<a href="https://drive.google.com/file/d/${item.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
             : `<span style="color: #94a3b8; font-size: 0.75rem;">(Saved)</span>`;
 
+          const imageSrc = item.dataUrl || (item.driveFileId ? `https://drive.google.com/thumbnail?id=${item.driveFileId}&sz=w800` : "");
+
           aiBubble.innerHTML = `
             <div class="bubble-avatar">✨</div>
             <div class="ai-card">
               <div class="ai-image-hero">
-                <img src="${item.dataUrl}" alt="${item.prompt}" />
+                <img src="${imageSrc}" alt="${item.prompt}" />
               </div>
               <div class="ai-meta-bar">
                 <div style="display: flex; gap: 6px;">
@@ -912,13 +937,30 @@
             const driveUrl = item.driveFileId
               ? `https://drive.google.com/file/d/${item.driveFileId}/view`
               : "#";
-            openModal(item.dataUrl, driveUrl);
+            openModal(imageSrc, driveUrl);
           });
 
           chatScroller.appendChild(aiBubble);
         }
       });
       chatScroller.scrollTop = chatScroller.scrollHeight;
+    }
+
+    async function syncDriveHistory() {
+      try {
+        const res = await fetch("/api/drive/history");
+        const data = await res.json();
+        if (data.success && Array.isArray(data.history) && data.history.length > 0) {
+          const localHist = getStoredHistory();
+          if (data.history.length > localHist.length || localHist.length === 0) {
+            saveHistory(data.history, false);
+            chatScroller.innerHTML = "";
+            renderSavedHistory();
+          }
+        }
+      } catch (e) {
+        console.warn("Drive history sync error:", e);
+      }
     }
 
     renderSavedHistory();
