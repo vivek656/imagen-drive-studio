@@ -10,7 +10,7 @@
   <style>
     :root {
       --bg: #090d16;
-      --card-bg: rgba(22, 30, 49, 0.9);
+      --card-bg: rgba(22, 30, 49, 0.8);
       --card-border: rgba(255, 255, 255, 0.08);
       --primary: #6366f1;
       --primary-hover: #4f46e5;
@@ -41,7 +41,7 @@
 
     /* Top Navigation Bar */
     header {
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 1.5rem;
       border-bottom: 1px solid var(--card-border);
       backdrop-filter: blur(16px);
       display: flex;
@@ -60,25 +60,25 @@
 
     .logo-badge {
       background: linear-gradient(135deg, #6366f1, #a855f7);
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 1.05rem;
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
 
     .brand h1 {
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       letter-spacing: -0.3px;
     }
 
-    /* Tabs (Chat Studio vs Drive Gallery) */
-    .view-toggle {
+    /* Mobile-only view toggle pills */
+    .mobile-view-toggle {
       display: flex;
       background: rgba(15, 23, 42, 0.7);
       padding: 3px;
@@ -107,17 +107,24 @@
       box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
     }
 
+    /* On Desktop (>= 1024px), hide mobile toggle tabs */
+    @media (min-width: 1024px) {
+      .mobile-view-toggle {
+        display: none;
+      }
+    }
+
     /* Drive status indicator */
     .drive-status {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
+      gap: 8px;
+      font-size: 0.78rem;
     }
 
     .dot {
-      width: 7px;
-      height: 7px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #f59e0b;
       box-shadow: 0 0 8px #f59e0b;
@@ -127,7 +134,7 @@
       background: #6366f1;
       color: white;
       border: none;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 6px;
       font-size: 0.75rem;
       font-weight: 700;
@@ -138,39 +145,66 @@
       background: rgba(239, 68, 68, 0.2);
       color: #f87171;
       border: 1px solid rgba(239, 68, 68, 0.4);
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 6px;
       font-size: 0.72rem;
       cursor: pointer;
     }
 
-    /* Main Container */
+    /* Main Responsive Container */
     main {
       flex: 1;
       display: flex;
-      flex-direction: column;
       position: relative;
       overflow: hidden;
+      width: 100%;
     }
 
-    /* VIEW 1: Chat Stream */
-    .view-container {
-      display: none;
+    /* DESKTOP SPLIT-SCREEN LAYOUT (>= 1024px) */
+    @media (min-width: 1024px) {
+      main {
+        display: grid;
+        grid-template-columns: 520px 1fr;
+      }
+
+      .pane {
+        display: flex !important;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      #chatPane {
+        border-right: 1px solid var(--card-border);
+      }
+    }
+
+    /* MOBILE SINGLE-PANE VIEW (< 1024px) */
+    @media (max-width: 1023px) {
+      .pane {
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+
+      .pane.active {
+        display: flex;
+      }
+    }
+
+    /* Chat Pane Styling */
+    .chat-pane-wrapper {
+      display: flex;
       flex-direction: column;
       height: 100%;
       width: 100%;
-      max-width: 1000px;
-      margin: 0 auto;
-    }
-
-    .view-container.active {
-      display: flex;
+      position: relative;
     }
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem 1rem 5rem 1rem;
+      padding: 1rem 1rem 5.5rem 1rem;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -178,14 +212,14 @@
     }
 
     .message {
-      max-width: 88%;
+      max-width: 90%;
       display: flex;
       flex-direction: column;
-      animation: fadeIn 0.25s ease-out;
+      animation: fadeIn 0.2s ease-out;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
@@ -205,14 +239,13 @@
       border-radius: 16px 16px 16px 4px;
       overflow: hidden;
       width: 100%;
-      max-width: 520px;
     }
 
     .ai-img-wrapper {
       position: relative;
       width: 100%;
       background: #000;
-      min-height: 220px;
+      min-height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -222,7 +255,7 @@
     .ai-img-wrapper img {
       width: 100%;
       height: auto;
-      max-height: 480px;
+      max-height: 420px;
       object-fit: contain;
       display: block;
     }
@@ -249,16 +282,23 @@
     .action-pill {
       background: rgba(255, 255, 255, 0.06);
       color: var(--accent);
-      padding: 4px 10px;
-      border-radius: 6px;
+      padding: 5px 12px;
+      border-radius: 8px;
       text-decoration: none;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      border: 1px solid var(--card-border);
+      transition: all 0.2s;
     }
 
-    /* Fixed Bottom Chat Input Bar */
+    .action-pill:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+    }
+
+    /* Fixed Bottom Input Bar */
     .chat-input-bar {
       position: absolute;
       bottom: 0;
@@ -335,40 +375,52 @@
       box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
 
-    /* VIEW 2: Drive Gallery Grid & Library Viewer */
-    .gallery-view {
-      flex: 1;
+    /* Library Viewer Gallery Pane */
+    .gallery-pane-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      padding: 1.25rem 1.5rem;
       overflow-y: auto;
-      padding: 1rem;
     }
 
     .gallery-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
     }
 
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
     }
 
-    @media (min-width: 640px) {
+    @media (min-width: 1400px) {
       .grid-container {
-        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
       }
     }
 
     .grid-card {
-      background: rgba(15, 23, 42, 0.6);
+      background: rgba(15, 23, 42, 0.65);
       border: 1px solid var(--card-border);
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
       cursor: pointer;
       position: relative;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    }
+
+    .grid-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
+      border-color: rgba(99, 102, 241, 0.4);
     }
 
     .grid-thumb {
@@ -376,26 +428,25 @@
       aspect-ratio: 1 / 1;
       background: #0f172a;
       overflow: hidden;
-      position: relative;
     }
 
     .grid-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.2s;
+      transition: transform 0.3s;
     }
 
     .grid-card:hover .grid-thumb img {
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
     .grid-info {
-      padding: 8px 10px;
+      padding: 10px 12px;
     }
 
     .grid-name {
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: 600;
       white-space: nowrap;
       overflow: hidden;
@@ -403,23 +454,25 @@
     }
 
     .grid-meta {
-      font-size: 0.68rem;
+      font-size: 0.72rem;
       color: var(--text-muted);
-      margin-top: 2px;
+      margin-top: 4px;
+      display: flex;
+      justify-content: space-between;
     }
 
-    /* Fullscreen Lightbox / Modal for Library Viewing */
+    /* Lightbox Modal */
     .lightbox {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.92);
-      backdrop-filter: blur(20px);
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(24px);
       z-index: 100;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.5rem;
     }
 
     .lightbox.active {
@@ -428,28 +481,28 @@
 
     .lightbox-close {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 20px;
+      right: 20px;
       background: rgba(255, 255, 255, 0.1);
       border: none;
       color: #fff;
-      font-size: 1.4rem;
-      width: 40px;
-      height: 40px;
+      font-size: 1.5rem;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       cursor: pointer;
     }
 
     .lightbox-img {
-      max-width: 95%;
-      max-height: 80vh;
-      border-radius: 10px;
+      max-width: 90%;
+      max-height: 82vh;
+      border-radius: 12px;
       object-fit: contain;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85);
     }
 
     .lightbox-bar {
-      margin-top: 14px;
+      margin-top: 16px;
       display: flex;
       gap: 12px;
     }
@@ -461,70 +514,77 @@
   <header>
     <div class="brand">
       <div class="logo-badge">I3</div>
-      <h1>Imagen AI</h1>
+      <div>
+        <h1>Imagen AI Studio</h1>
+      </div>
     </div>
 
-    <!-- View Switcher -->
-    <div class="view-toggle">
-      <button class="tab-btn active" id="tabChat" data-view="chatView">💬 Chat</button>
-      <button class="tab-btn" id="tabGallery" data-view="galleryView">🖼️ Library</button>
+    <!-- Mobile-Only Toggle Switcher -->
+    <div class="mobile-view-toggle">
+      <button class="tab-btn active" id="tabChat" data-view="chatPane">💬 Chat</button>
+      <button class="tab-btn" id="tabGallery" data-view="galleryPane">🖼️ Library</button>
     </div>
 
-    <!-- Drive Connection Badge -->
+    <!-- Google Drive Sync Status -->
     <div class="drive-status" id="driveStatus">
       <span class="dot" id="statusDot"></span>
-      <button id="connectDriveBtn" class="auth-btn" style="display: none;">Connect</button>
-      <button id="disconnectDriveBtn" class="disconnect-btn" style="display: none;">Exit</button>
+      <span id="statusText" style="display: none; @media(min-width: 640px){ display: inline; }">Drive</span>
+      <button id="connectDriveBtn" class="auth-btn" style="display: none;">Connect Drive</button>
+      <button id="disconnectDriveBtn" class="disconnect-btn" style="display: none;">Disconnect</button>
     </div>
   </header>
 
   <main>
-    <!-- VIEW 1: Chat Stream Mode -->
-    <section class="view-container active" id="chatView">
-      <div class="chat-messages" id="chatMessages">
-        <!-- Welcome Message -->
-        <div class="message ai">
-          <div class="ai-content">
-            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to Imagen 3 Studio ✨</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">
-              Type any visual concept below. Images are generated with Imagen 3 and automatically backed up to your Google Drive gallery!
+    <!-- LEFT PANE: Chat Stream Generation -->
+    <section class="pane active" id="chatPane">
+      <div class="chat-pane-wrapper">
+        <div class="chat-messages" id="chatMessages">
+          <div class="message ai">
+            <div class="ai-content">
+              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to Imagen 3 Studio ✨</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">
+                Describe any image idea below. Generated images sync in real-time to your Google Drive library on the right!
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Bottom Input Controls -->
-      <div class="chat-input-bar">
-        <div class="pill-options">
-          <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Style:</span>
-          <button class="option-chip active" data-type="style" data-val="editorial">📸 Editorial</button>
-          <button class="option-chip" data-type="style" data-val="cinematic">🎬 Cinematic</button>
-          <button class="option-chip" data-type="style" data-val="fineart">🖼️ Fine Art</button>
-          <button class="option-chip" data-type="style" data-val="noir">🌑 Noir</button>
-          <button class="option-chip" data-type="style" data-val="raw">⚡ Raw</button>
+        <!-- Chat Input Bar -->
+        <div class="chat-input-bar">
+          <div class="pill-options">
+            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Style:</span>
+            <button class="option-chip active" data-type="style" data-val="editorial">📸 Editorial</button>
+            <button class="option-chip" data-type="style" data-val="cinematic">🎬 Cinematic</button>
+            <button class="option-chip" data-type="style" data-val="fineart">🖼️ Fine Art</button>
+            <button class="option-chip" data-type="style" data-val="noir">🌑 Noir</button>
+            <button class="option-chip" data-type="style" data-val="raw">⚡ Raw</button>
 
-          <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Ratio:</span>
-          <button class="option-chip active" data-type="ratio" data-val="1:1">1:1</button>
-          <button class="option-chip" data-type="ratio" data-val="16:9">16:9</button>
-          <button class="option-chip" data-type="ratio" data-val="9:16">9:16</button>
-          <button class="option-chip" data-type="ratio" data-val="4:3">4:3</button>
-        </div>
+            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Ratio:</span>
+            <button class="option-chip active" data-type="ratio" data-val="1:1">1:1</button>
+            <button class="option-chip" data-type="ratio" data-val="16:9">16:9</button>
+            <button class="option-chip" data-type="ratio" data-val="9:16">9:16</button>
+            <button class="option-chip" data-type="ratio" data-val="4:3">4:3</button>
+          </div>
 
-        <div class="input-row">
-          <input type="text" id="chatInput" class="input-box" placeholder="Ask Imagen to generate an image..." enterkeyhint="send" />
-          <button id="sendBtn" class="send-btn">➔</button>
+          <div class="input-row">
+            <input type="text" id="chatInput" class="input-box" placeholder="Ask Imagen to generate an image..." enterkeyhint="send" />
+            <button id="sendBtn" class="send-btn">➔</button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 2: Library Grid Viewer Mode -->
-    <section class="view-container" id="galleryView">
-      <div class="gallery-view">
+    <!-- RIGHT PANE: Google Drive Library Viewer -->
+    <section class="pane" id="galleryPane">
+      <div class="gallery-pane-wrapper">
         <div class="gallery-topbar">
-          <div style="font-size: 0.9rem; font-weight: 700;">Google Drive Synced Library</div>
+          <div>
+            <h2 style="font-size: 1.1rem; font-weight: 700;">Google Drive Library</h2>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Folder: Imagen-AI-Gallery</div>
+          </div>
           <div style="display: flex; gap: 8px;">
-            <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Drive Folder</a>
-            <button id="refreshGridBtn" class="action-pill" style="border:none; cursor:pointer;">🔄 Refresh</button>
+            <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Open Drive</a>
+            <button id="refreshGridBtn" class="action-pill" style="cursor: pointer;">🔄 Refresh</button>
           </div>
         </div>
         <div class="grid-container" id="gridContainer">
@@ -550,8 +610,8 @@
 
     const tabChat = document.getElementById("tabChat");
     const tabGallery = document.getElementById("tabGallery");
-    const chatView = document.getElementById("chatView");
-    const galleryView = document.getElementById("galleryView");
+    const chatPane = document.getElementById("chatPane");
+    const galleryPane = document.getElementById("galleryPane");
     const chatMessages = document.getElementById("chatMessages");
     const chatInput = document.getElementById("chatInput");
     const sendBtn = document.getElementById("sendBtn");
@@ -568,19 +628,19 @@
     const lightboxDriveLink = document.getElementById("lightboxDriveLink");
     const lightboxDownload = document.getElementById("lightboxDownload");
 
-    // View Switching (Chat vs Library)
+    // Mobile View Toggle Handlers
     tabChat.addEventListener("click", () => {
       tabChat.classList.add("active");
       tabGallery.classList.remove("active");
-      chatView.classList.add("active");
-      galleryView.classList.remove("active");
+      chatPane.classList.add("active");
+      galleryPane.classList.remove("active");
     });
 
     tabGallery.addEventListener("click", () => {
       tabGallery.classList.add("active");
       tabChat.classList.remove("active");
-      galleryView.classList.add("active");
-      chatView.classList.remove("active");
+      galleryPane.classList.add("active");
+      chatPane.classList.remove("active");
       loadDriveFiles();
     });
 
@@ -640,7 +700,10 @@
             </div>
             <div class="grid-info">
               <div class="grid-name">${file.name}</div>
-              <div class="grid-meta">${file.size ? (parseInt(file.size)/1024).toFixed(0) + ' KB' : 'Saved'}</div>
+              <div class="grid-meta">
+                <span>${file.size ? (parseInt(file.size)/1024).toFixed(0) + ' KB' : 'Saved'}</span>
+                <span>${file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : ''}</span>
+              </div>
             </div>
           `;
           card.addEventListener("click", () => openLightbox(thumbUrl, viewUrl));
@@ -730,6 +793,9 @@
             : "#";
           openLightbox(data.dataUrl, driveUrl);
         });
+
+        // Auto-refresh gallery on the right
+        loadDriveFiles();
 
       } catch (err) {
         aiMsg.innerHTML = `
