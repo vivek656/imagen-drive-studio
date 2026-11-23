@@ -770,12 +770,18 @@
       <button class="switch-btn" id="mobileTabLibrary">Library</button>
     </div>
 
-    <!-- Google Drive Sync Status Pill -->
-    <div class="drive-pill" id="drivePill">
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusLabel" style="color: var(--text-secondary);">Connecting...</span>
-      <button id="connectBtn" class="auth-link" style="display: none;">Connect Drive</button>
-      <button id="disconnectBtn" class="disconnect-link" style="display: none;">Disconnect</button>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button id="pricingBtn" class="ghost-btn" style="border-radius: 20px; font-weight: 500;">
+        <span>🏷️</span> Pricing & Quota
+      </button>
+
+      <!-- Google Drive Sync Status Pill -->
+      <div class="drive-pill" id="drivePill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusLabel" style="color: var(--text-secondary);">Connecting...</span>
+        <button id="connectBtn" class="auth-link" style="display: none;">Connect Drive</button>
+        <button id="disconnectBtn" class="disconnect-link" style="display: none;">Disconnect</button>
+      </div>
     </div>
   </header>
 
@@ -880,6 +886,80 @@
     <div class="modal-toolbar">
       <a id="modalDriveBtn" href="#" target="_blank" class="ghost-btn" style="padding: 10px 16px;">📂 Open in Google Drive</a>
       <a id="modalDownloadBtn" href="#" download="ai_image.jpg" class="ghost-btn" style="padding: 10px 16px;">⬇️ Download</a>
+    </div>
+  </div>
+
+  <!-- Pricing & Quota Modal -->
+  <div class="modal-overlay" id="pricingModal">
+    <div style="background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 20px; padding: 24px; max-width: 620px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.85); position: relative;">
+      <button id="closePricingBtn" class="modal-close-btn" style="position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; font-size: 1rem;">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 16px;">
+        <div class="gemini-sparkle">💎</div>
+        <div>
+          <h2 style="font-size: 1.15rem; font-weight: 700; color: #fff;">Google AI Studio & Model Pricing</h2>
+          <p style="font-size: 0.78rem; color: var(--text-secondary);">Direct analysis from <a href="https://aistudio.google.com/docs/pricing" target="_blank" style="color: var(--accent-blue);">aistudio.google.com/docs/pricing</a></p>
+        </div>
+      </div>
+
+      <!-- Pricing Breakdown Cards -->
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+        <!-- Card 1: Free Tier -->
+        <div style="background: var(--bg-surface); border: 1px solid rgba(52, 211, 153, 0.3); border-radius: 14px; padding: 14px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 600; font-size: 0.92rem; color: #34d399;">🆓 Current Active Tier (100% Free)</span>
+            <span style="background: rgba(52, 211, 153, 0.2); color: #34d399; font-size: 0.72rem; padding: 3px 8px; border-radius: 10px; font-weight: 600;">ACTIVE</span>
+          </div>
+          <ul style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.6; margin-left: 18px;">
+            <li><b>Gemini 2.5 Flash / 3 Flash</b>: Up to <b>1,500 free requests per day</b> ($0.00).</li>
+            <li><b>Rate Limit</b>: 15 RPM (Requests Per Minute) &amp; 1M TPM (Tokens Per Minute).</li>
+            <li><b>FLUX.1 8K Photoreal</b>: Included free for unlimited image generation.</li>
+          </ul>
+        </div>
+
+        <!-- Card 2: Google Pay-As-You-Go -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 14px; padding: 14px 16px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-weight: 600; font-size: 0.92rem; color: #a8c7fa;">💳 Google Paid Tier (Pay-As-You-Go)</span>
+            <span style="background: var(--bg-pill); color: #a8c7fa; font-size: 0.72rem; padding: 3px 8px; border-radius: 10px; font-weight: 600;">OPTIONAL</span>
+          </div>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 8px; color: #cbd5e1;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--border-color); text-align: left; color: var(--text-secondary);">
+                <th style="padding: 6px 0;">Model / Capability</th>
+                <th style="padding: 6px 0;">Cost</th>
+                <th style="padding: 6px 0;">What You Get</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 8px 0;"><b>Imagen 3</b> (Google Image)</td>
+                <td style="padding: 8px 0; color: #34d399;">~$0.03 / image</td>
+                <td style="padding: 8px 0;">30 images for $1.00</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 8px 0;"><b>Gemini 3 Flash</b> (Input)</td>
+                <td style="padding: 8px 0; color: #34d399;">$0.75 / 1M tokens</td>
+                <td style="padding: 8px 0;">~750,000 words per $0.75</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0;"><b>Gemini 3 Flash</b> (Output)</td>
+                <td style="padding: 8px 0; color: #34d399;">$3.75 / 1M tokens</td>
+                <td style="padding: 8px 0;">~750,000 words generated</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Card 3: Free $300 Credit Tip -->
+        <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(37, 99, 235, 0.15)); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 14px; padding: 14px 16px;">
+          <div style="font-weight: 600; font-size: 0.9rem; color: #c4b5fd; margin-bottom: 4px;">🎁 Tip: Google Cloud $300 Free Trial Credit</div>
+          <p style="font-size: 0.8rem; color: #cbd5e1; line-height: 1.5;">
+            Google offers <b>$300 in free credits</b> for 90 days when you link a billing account on Google Cloud. With $300, you can generate <b>~9,000 Imagen 3 images</b> or millions of Gemini Flash tokens completely free!
+          </p>
+          <a href="https://cloud.google.com/free" target="_blank" class="ghost-btn" style="margin-top: 10px; font-size: 0.78rem;">🚀 Claim $300 Google Cloud Credit ↗</a>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1308,6 +1388,19 @@
     modalOverlay.addEventListener("click", (e) => {
       if (e.target === modalOverlay) modalOverlay.classList.remove("active");
     });
+
+    // Pricing Modal
+    const pricingBtn = document.getElementById("pricingBtn");
+    const pricingModal = document.getElementById("pricingModal");
+    const closePricingBtn = document.getElementById("closePricingBtn");
+
+    if (pricingBtn && pricingModal) {
+      pricingBtn.addEventListener("click", () => pricingModal.classList.add("active"));
+      closePricingBtn.addEventListener("click", () => pricingModal.classList.remove("active"));
+      pricingModal.addEventListener("click", (e) => {
+        if (e.target === pricingModal) pricingModal.classList.remove("active");
+      });
+    }
 
     // Handle Generation / Chat Send
     async function handleSend() {
