@@ -105,7 +105,6 @@ async function uploadFileToDrive(filePath, fileName) {
       fields: "id, name, webViewLink"
     });
 
-    // Make file viewable
     try {
       await drive.permissions.create({
         fileId: file.data.id,
@@ -120,7 +119,6 @@ async function uploadFileToDrive(filePath, fileName) {
       message: `Uploaded via Google Drive API (ID: ${file.data.id})`
     };
   } else {
-    // Fallback to local gdrive CLI
     const cmd = `gdrive mutate upload "${filePath}" --parent "${driveFolderId}" --json`;
     const uploadExec = await execAsync(cmd);
     const idMatch = uploadExec.stdout.match(/ID:\s*([a-zA-Z0-9_-]+)/);
@@ -135,6 +133,55 @@ async function uploadFileToDrive(filePath, fileName) {
       message: uploadExec.stdout.trim()
     };
   }
+}
+
+// ─── Image Generation Function (Supports both generate_content & generate_images) ───
+async function generateImageWithGemini(ai, prompt, aspectRatio) {
+  // Method 1: Try Gemini Image Generation via generate_content (gemini-2.5-flash-image)
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-image",
+      contents: prompt,
+      config: {
+        responseModalities: ["IMAGE", "TEXT"],
+      },
+    });
+
+    const candidate = response.candidates?.[0];
+    if (candidate?.content?.parts) {
+      for (const part of candidate.content.parts) {
+        if (part.inlineData?.data) {
+          return part.inlineData.data;
+        }
+      }
+    }
+  } catch (err1) {
+    console.warn("generateContent model attempt failed:", err1.message);
+  }
+
+  // Method 2: Try Imagen 3 generateImages
+  try {
+    const result = await ai.models.generateImages({
+      model: "imagen-3.0-generate-002",
+      prompt: prompt,
+      config: {
+        numberOfImages: 1,
+        outputMimeType: "image/jpeg",
+        aspectRatio: aspectRatio,
+        personGeneration: "ALLOW_ADULT",
+      },
+    });
+
+    const imageBytes = result.generatedImages?.[0]?.image?.imageBytes;
+    if (imageBytes) {
+      return imageBytes;
+    }
+  } catch (err2) {
+    console.warn("generateImages attempt failed:", err2.message);
+    throw new Error(err2.message || "Failed to generate image with Gemini API");
+  }
+
+  throw new Error("No image data returned from Gemini API");
 }
 
 const server = http.createServer(async (req, res) => {
@@ -164,7 +211,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // API 2: Generate Image with Imagen 3
+  // API 2: Generate Image with Gemini / Imagen
   if (pathname === "/api/generate" && req.method === "POST") {
     let body = "";
     req.on("data", chunk => { body += chunk; });
@@ -190,24 +237,9 @@ const server = http.createServer(async (req, res) => {
 
         const ai = new GoogleGenAI({ apiKey: effectiveKey });
         const enhancedPrompt = enhancePrompt(prompt, style);
-        console.log(`[Generate] Original: "${prompt}"`);
-        console.log(`[Generate] Enhanced: "${enhancedPrompt}"`);
+        console.log(`[Generate] Prompt: "${prompt}" (Style: ${style})`);
 
-        const result = await ai.models.generateImages({
-          model: "imagen-3.0-generate-002",
-          prompt: enhancedPrompt,
-          config: {
-            numberOfImages: 1,
-            outputMimeType: "image/jpeg",
-            aspectRatio: aspectRatio,
-            personGeneration: "ALLOW_ADULT",
-          },
-        });
-
-        const imageBytes = result.generatedImages?.[0]?.image?.imageBytes;
-        if (!imageBytes) {
-          throw new Error("No image data returned from Imagen 3");
-        }
+        const imageBytes = await generateImageWithGemini(ai, enhancedPrompt, aspectRatio);
 
         const fileName = `img_${Date.now()}.jpg`;
         const localFilePath = path.join(GENERATED_DIR, fileName);
