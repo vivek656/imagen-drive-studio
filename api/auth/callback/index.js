@@ -14,7 +14,8 @@ function parseCookies(req) {
 
 export default async function handler(req, res) {
   const host = req.headers["x-forwarded-host"] || req.headers.host;
-  const proto = req.headers["x-forwarded-proto"] || "https";
+  const isLocal = host.includes("localhost") || host.includes("127.0.0.1");
+  const proto = req.headers["x-forwarded-proto"] || (isLocal ? "http" : "https");
   const redirectUri = `${proto}://${host}/api/auth/callback`;
 
   const parsedUrl = new URL(req.url, `${proto}://${host}`);
