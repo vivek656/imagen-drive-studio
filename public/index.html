@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Gemini & Imagen AI Studio</title>
+  <title>Imagen & Gemini AI Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -44,7 +44,7 @@
       flex-direction: column;
     }
 
-    /* Top Sleek Navigation Bar */
+    /* Top Navigation Bar */
     header {
       height: 56px;
       padding: 0 1.25rem;
@@ -58,10 +58,36 @@
       z-index: 50;
     }
 
-    .brand {
+    .brand-group {
       display: flex;
       align-items: center;
       gap: 12px;
+    }
+
+    .icon-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.15s;
+    }
+
+    .icon-btn:hover {
+      background: var(--bg-pill);
+      color: #fff;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .gemini-sparkle {
@@ -156,13 +182,18 @@
       font-size: 0.75rem;
     }
 
-    /* Main App Layout */
+    /* Main App Layout: 3 Columns (Sidebar + Chat + Library) */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 520px 1fr;
+      grid-template-columns: 240px minmax(460px, 600px) 1fr;
       overflow: hidden;
       min-height: 0;
+      transition: grid-template-columns 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    main.sidebar-collapsed {
+      grid-template-columns: 0px minmax(480px, 680px) 1fr;
     }
 
     @media (max-width: 1023px) {
@@ -177,9 +208,115 @@
       .panel.active {
         display: flex !important;
       }
+      #chatsSidebar {
+        display: none;
+        width: 100%;
+        height: 100%;
+      }
+      #chatsSidebar.active {
+        display: flex !important;
+      }
     }
 
-    /* LEFT PANEL: Modern Conversational Stream */
+    /* ============================================================
+       COLUMN 1: SESSIONS / CHATS SIDEBAR
+       ============================================================ */
+    #chatsSidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .sidebar-top {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      flex-shrink: 0;
+    }
+
+    .new-chat-btn {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(37, 99, 235, 0.2));
+      border: 1px solid rgba(168, 85, 247, 0.35);
+      color: #fff;
+      padding: 9px 12px;
+      border-radius: 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .new-chat-btn:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.35), rgba(37, 99, 235, 0.35));
+      border-color: #a855f7;
+    }
+
+    .chats-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .chat-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .chat-item:hover {
+      background: var(--bg-surface);
+      color: #fff;
+    }
+
+    .chat-item.active {
+      background: var(--bg-surface);
+      color: #fff;
+      font-weight: 500;
+      border-left: 3px solid #8b5cf6;
+    }
+
+    .chat-item-title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .chat-del-btn {
+      opacity: 0;
+      background: transparent;
+      border: none;
+      color: #f87171;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      transition: opacity 0.15s;
+    }
+
+    .chat-item:hover .chat-del-btn {
+      opacity: 1;
+    }
+
+    /* ============================================================
+       COLUMN 2: CONVERSATIONAL STREAM (CHAT & IMAGE)
+       ============================================================ */
     #chatPanel {
       display: flex;
       flex-direction: column;
@@ -205,7 +342,7 @@
       display: flex;
       gap: 12px;
       max-width: 94%;
-      animation: messageAppear 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: messageAppear 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     @keyframes messageAppear {
@@ -240,7 +377,21 @@
       color: #fff;
     }
 
-    /* AI Generated Card (Gemini / ChatGPT Style) */
+    /* Text AI Card */
+    .ai-text-card {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 14px 18px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: #e2e8f0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Image AI Card */
     .ai-card {
       background: var(--bg-sidebar);
       border: 1px solid var(--border-color);
@@ -297,9 +448,7 @@
       font-size: 0.78rem;
     }
 
-    /* ============================================================
-       ChatGPT / Gemini Floating Prompt Box
-       ============================================================ */
+    /* Floating Input Card */
     .prompt-container {
       padding: 1rem 1.25rem 1.25rem 1.25rem;
       background: linear-gradient(to top, var(--bg-main) 85%, transparent);
@@ -344,11 +493,38 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 4px;
+      padding-top: 6px;
       border-top: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    /* Gemini-style parameter chips */
+    /* Mode Switcher Pills */
+    .mode-switch-group {
+      display: flex;
+      background: var(--bg-pill);
+      padding: 2px;
+      border-radius: 14px;
+      gap: 2px;
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mode-btn.active {
+      background: #7c3aed;
+      color: #fff;
+    }
+
     .param-chips-group {
       display: flex;
       align-items: center;
@@ -358,48 +534,44 @@
 
     .param-dropdown {
       background: var(--bg-pill);
+      color: #fff;
       border: 1px solid var(--border-color);
-      color: var(--text-main);
       padding: 5px 10px;
       border-radius: 14px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       font-weight: 500;
       outline: none;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      transition: all 0.15s;
     }
 
     .param-dropdown:hover {
-      background: #404347;
       border-color: var(--border-hover);
     }
 
     .submit-button {
       width: 36px;
       height: 36px;
-      border-radius: 50%;
-      background: #fff;
+      background: #7c3aed;
       border: none;
-      color: #000;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
+      color: #fff;
       cursor: pointer;
-      transition: transform 0.15s, opacity 0.15s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       flex-shrink: 0;
     }
 
     .submit-button:hover {
-      transform: scale(1.06);
+      background: #6d28d9;
+      transform: scale(1.05);
     }
 
-    .submit-button:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* RIGHT PANEL: Modern Photo Library Grid */
+    /* ============================================================
+       COLUMN 3: GOOGLE DRIVE GALLERY
+       ============================================================ */
     #libraryPanel {
       display: flex;
       flex-direction: column;
@@ -419,19 +591,19 @@
     }
 
     .library-heading {
-      font-size: 0.95rem;
       font-weight: 600;
+      font-size: 0.95rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
     .library-counter {
-      background: var(--bg-surface);
-      color: var(--text-secondary);
+      font-size: 0.75rem;
       padding: 2px 8px;
+      background: var(--bg-surface);
       border-radius: 12px;
-      font-size: 0.72rem;
+      color: var(--text-secondary);
     }
 
     .library-actions {
@@ -443,22 +615,22 @@
     .ghost-btn {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      color: var(--text-main);
+      color: var(--text-secondary);
       padding: 6px 12px;
-      border-radius: 14px;
+      border-radius: 16px;
       font-size: 0.78rem;
       font-weight: 500;
-      cursor: pointer;
       text-decoration: none;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       transition: all 0.2s;
     }
 
     .ghost-btn:hover {
       background: var(--bg-pill);
-      border-color: var(--border-hover);
+      color: #fff;
     }
 
     .library-scroll {
@@ -470,85 +642,80 @@
 
     .masonry-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
       gap: 16px;
-    }
-
-    @media (min-width: 1400px) {
-      .masonry-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 20px;
-      }
     }
 
     .gallery-item {
       background: var(--bg-surface);
       border: 1px solid var(--border-color);
-      border-radius: 16px;
+      border-radius: 14px;
       overflow: hidden;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      position: relative;
+      transition: transform 0.2s, border-color 0.2s;
+      display: flex;
+      flex-direction: column;
     }
 
     .gallery-item:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
-      border-color: var(--border-hover);
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.2);
     }
 
     .item-thumbnail {
       width: 100%;
-      aspect-ratio: 1 / 1;
+      height: 180px;
       background: #000;
       overflow: hidden;
-      position: relative;
     }
 
     .item-thumbnail img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.35s ease;
+      display: block;
+      transition: transform 0.3s;
     }
 
     .gallery-item:hover .item-thumbnail img {
-      transform: scale(1.06);
+      transform: scale(1.04);
     }
 
     .item-info {
-      padding: 10px 14px;
-      background: var(--bg-surface);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .item-title {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 500;
-      white-space: nowrap;
+      color: #fff;
       overflow: hidden;
       text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .item-details {
-      font-size: 0.72rem;
-      color: var(--text-secondary);
-      margin-top: 4px;
       display: flex;
       justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
     }
 
-    /* Modern Lightbox Modal */
+    /* Modal */
     .modal-overlay {
-      display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(25px);
-      z-index: 100;
-      flex-direction: column;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: none;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
+      flex-direction: column;
+      padding: 20px;
     }
 
     .modal-overlay.active {
@@ -559,23 +726,20 @@
       position: absolute;
       top: 20px;
       right: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: var(--bg-surface);
-      border: 1px solid var(--border-color);
-      color: #fff;
-      font-size: 1.3rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 1.2rem;
       cursor: pointer;
     }
 
     .modal-img {
       max-width: 90%;
       max-height: 80vh;
-      border-radius: 14px;
+      border-radius: 12px;
       object-fit: contain;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
     }
@@ -589,15 +753,19 @@
 </head>
 <body>
 
-  <!-- Sleek Top Header -->
+  <!-- Top Header -->
   <header>
-    <div class="brand">
-      <div class="gemini-sparkle">✨</div>
-      <div class="brand-title">Imagen Studio</div>
+    <div class="brand-group">
+      <button id="toggleSidebarBtn" class="icon-btn" title="Toggle Chats (Sidebar)">☰</button>
+      <div class="brand">
+        <div class="gemini-sparkle">✨</div>
+        <div class="brand-title">Imagen & Gemini Studio</div>
+      </div>
     </div>
 
     <!-- Mobile view toggle -->
     <div class="view-switcher">
+      <button class="switch-btn" id="mobileTabChats">Chats</button>
       <button class="switch-btn active" id="mobileTabChat">Chat</button>
       <button class="switch-btn" id="mobileTabLibrary">Library</button>
     </div>
@@ -611,35 +779,44 @@
     </div>
   </header>
 
-  <main>
-    <!-- LEFT PANEL: ChatGPT / Gemini Style Chat Stream -->
+  <main id="mainLayout">
+    <!-- COLUMN 1: MULTIPLE CHATS SIDEBAR -->
+    <aside id="chatsSidebar">
+      <div class="sidebar-top">
+        <button id="newChatBtn" class="new-chat-btn">
+          <span>➕</span> New Chat
+        </button>
+      </div>
+      <div class="chats-list" id="chatsList">
+        <!-- Rendered chats -->
+      </div>
+    </aside>
+
+    <!-- COLUMN 2: CONVERSATIONAL STREAM (CHAT + IMAGE) -->
     <section class="panel active" id="chatPanel">
       <div class="chat-scroller" id="chatScroller">
-        <!-- Initial Assistant Greeting -->
-        <div class="chat-bubble ai">
-          <div class="bubble-avatar">✨</div>
-          <div class="ai-card" style="padding: 16px;">
-            <div style="font-weight: 600; font-size: 0.98rem; margin-bottom: 6px;">How can I help you visualize today?</div>
-            <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-              Type any visual concept below. Images are generated in high resolution with FLUX / SDXL and automatically synchronized into your Google Drive library on the right.
-            </div>
-          </div>
-        </div>
+        <!-- Messages rendered here -->
       </div>
 
       <!-- ChatGPT Floating Input Box -->
       <div class="prompt-container">
         <div class="floating-input-card">
-          <textarea id="promptInput" class="input-textarea" placeholder="Ask Imagen to generate anything... (Shift+Enter for new line)" rows="1"></textarea>
+          <textarea id="promptInput" class="input-textarea" placeholder="Describe an image to generate... (or switch to Chat mode)" rows="1"></textarea>
 
           <div class="input-actions-row">
-            <!-- Parameter Chips (Gemini style) -->
-            <div class="param-chips-group">
+            <!-- Mode Toggle: Image vs Chat -->
+            <div class="mode-switch-group">
+              <button class="mode-btn active" id="modeImageBtn">🎨 Image</button>
+              <button class="mode-btn" id="modeChatBtn">💬 Chat</button>
+            </div>
+
+            <!-- Parameter Chips (for Image Generation) -->
+            <div class="param-chips-group" id="imageParamsRow">
               <select id="modelDropdown" class="param-dropdown">
-                <option value="flux">⚡ FLUX.1 (Pro Quality)</option>
-                <option value="flux-realism">✨ Photoreal</option>
+                <option value="flux">⚡ FLUX.1 (8K Photoreal)</option>
+                <option value="flux-realism">📸 Realism</option>
                 <option value="flux-anime">🎨 Anime / Concept</option>
-                <option value="turbo">🚀 Fast SDXL Turbo</option>
+                <option value="turbo">🚀 Fast Turbo</option>
               </select>
 
               <select id="styleDropdown" class="param-dropdown">
@@ -659,8 +836,8 @@
               </select>
             </div>
 
-            <!-- Modern Send Button -->
-            <button id="sendPromptBtn" class="submit-button" title="Generate (Enter)">
+            <!-- Send Button -->
+            <button id="sendPromptBtn" class="submit-button" title="Send (Enter)">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="19" x2="12" y2="5"></line>
                 <polyline points="5 12 12 5 19 12"></polyline>
@@ -671,7 +848,7 @@
       </div>
     </section>
 
-    <!-- RIGHT PANEL: Sleek Google Drive Library -->
+    <!-- COLUMN 3: GOOGLE DRIVE LIBRARY -->
     <section class="panel" id="libraryPanel">
       <div class="library-topbar">
         <div class="library-heading">
@@ -707,14 +884,26 @@
   </div>
 
   <script>
+    // DOM Elements
+    const mainLayout = document.getElementById("mainLayout");
+    const toggleSidebarBtn = document.getElementById("toggleSidebarBtn");
+    const chatsSidebar = document.getElementById("chatsSidebar");
+    const chatsList = document.getElementById("chatsList");
+    const newChatBtn = document.getElementById("newChatBtn");
+
     const chatPanel = document.getElementById("chatPanel");
     const libraryPanel = document.getElementById("libraryPanel");
+    const mobileTabChats = document.getElementById("mobileTabChats");
     const mobileTabChat = document.getElementById("mobileTabChat");
     const mobileTabLibrary = document.getElementById("mobileTabLibrary");
 
     const chatScroller = document.getElementById("chatScroller");
     const promptInput = document.getElementById("promptInput");
     const sendPromptBtn = document.getElementById("sendPromptBtn");
+    const modeImageBtn = document.getElementById("modeImageBtn");
+    const modeChatBtn = document.getElementById("modeChatBtn");
+    const imageParamsRow = document.getElementById("imageParamsRow");
+
     const modelDropdown = document.getElementById("modelDropdown");
     const styleDropdown = document.getElementById("styleDropdown");
     const ratioDropdown = document.getElementById("ratioDropdown");
@@ -730,51 +919,315 @@
     const disconnectBtn = document.getElementById("disconnectBtn");
 
     const modalOverlay = document.getElementById("modalOverlay");
-    const modalImg = document.getElementById("modalImg");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const modalImg = document.getElementById("modalImg");
     const modalDriveBtn = document.getElementById("modalDriveBtn");
     const modalDownloadBtn = document.getElementById("modalDownloadBtn");
 
-    const libraryHeading = document.querySelector(".library-heading");
-    const clearHistoryBtn = document.createElement("button");
-    clearHistoryBtn.className = "ghost-btn";
-    clearHistoryBtn.textContent = "🗑️ Clear Chat";
-    clearHistoryBtn.style.fontSize = "0.75rem";
-    clearHistoryBtn.style.padding = "4px 10px";
-    clearHistoryBtn.addEventListener("click", () => {
-      if (confirm("Clear local chat conversation?")) {
-        localStorage.removeItem("ai_chat_history");
-        location.reload();
+    // State
+    let currentMode = "image"; // "image" or "chat"
+    let allSessions = loadAllSessions();
+    let activeChatId = localStorage.getItem("ai_active_chat_id") || getFirstChatId();
+
+    // Mode Toggle
+    modeImageBtn.addEventListener("click", () => setMode("image"));
+    modeChatBtn.addEventListener("click", () => setMode("chat"));
+
+    function setMode(mode) {
+      currentMode = mode;
+      if (mode === "image") {
+        modeImageBtn.classList.add("active");
+        modeChatBtn.classList.remove("active");
+        imageParamsRow.style.display = "flex";
+        promptInput.placeholder = "Describe an image to generate with FLUX.1...";
+      } else {
+        modeChatBtn.classList.add("active");
+        modeImageBtn.classList.remove("active");
+        imageParamsRow.style.display = "none";
+        promptInput.placeholder = "Ask Gemini anything, brainstorm ideas, write stories...";
       }
-    });
-    document.querySelector(".brand").appendChild(clearHistoryBtn);
+    }
 
-    // Auto-grow textarea
-    promptInput.addEventListener("input", () => {
-      promptInput.style.height = "auto";
-      promptInput.style.height = Math.min(promptInput.scrollHeight, 140) + "px";
+    // Sidebar Toggle
+    toggleSidebarBtn.addEventListener("click", () => {
+      mainLayout.classList.toggle("sidebar-collapsed");
     });
 
-    // Mobile tabs
+    // Mobile Navigation
+    mobileTabChats.addEventListener("click", () => {
+      mobileTabChats.classList.add("active");
+      mobileTabChat.classList.remove("active");
+      mobileTabLibrary.classList.remove("active");
+      chatsSidebar.classList.add("active");
+      chatPanel.classList.remove("active");
+      libraryPanel.classList.remove("active");
+    });
     mobileTabChat.addEventListener("click", () => {
       mobileTabChat.classList.add("active");
+      mobileTabChats.classList.remove("active");
       mobileTabLibrary.classList.remove("active");
+      chatsSidebar.classList.remove("active");
       chatPanel.classList.add("active");
       libraryPanel.classList.remove("active");
     });
-
     mobileTabLibrary.addEventListener("click", () => {
       mobileTabLibrary.classList.add("active");
+      mobileTabChats.classList.remove("active");
       mobileTabChat.classList.remove("active");
-      libraryPanel.classList.add("active");
+      chatsSidebar.classList.remove("active");
       chatPanel.classList.remove("active");
+      libraryPanel.classList.add("active");
       fetchDriveFiles();
     });
 
+    // Auto-expand textarea
+    promptInput.addEventListener("input", function() {
+      this.style.height = "auto";
+      this.style.height = Math.min(this.scrollHeight, 140) + "px";
+    });
+
+    // Sessions & Multi-Chat Storage
+    function getFirstChatId() {
+      const keys = Object.keys(allSessions);
+      if (keys.length > 0) return keys[0];
+      const initialId = "chat_" + Date.now();
+      allSessions[initialId] = {
+        id: initialId,
+        title: "New Conversation",
+        createdAt: Date.now(),
+        messages: []
+      };
+      saveAllSessions();
+      return initialId;
+    }
+
+    function loadAllSessions() {
+      try {
+        const stored = localStorage.getItem("ai_all_sessions");
+        if (stored) return JSON.parse(stored);
+      } catch (_) {}
+      return {};
+    }
+
+    function saveAllSessions(syncToDrive = true) {
+      try {
+        localStorage.setItem("ai_all_sessions", JSON.stringify(allSessions));
+        localStorage.setItem("ai_active_chat_id", activeChatId);
+
+        if (syncToDrive) {
+          // Prepare clean payload for Google Drive
+          const payload = {};
+          for (const [id, session] of Object.entries(allSessions)) {
+            payload[id] = {
+              id: session.id,
+              title: session.title,
+              createdAt: session.createdAt,
+              messages: (session.messages || []).map(m => {
+                if (m.type === "ai" && m.driveFileId) {
+                  return {
+                    type: m.type,
+                    prompt: m.prompt,
+                    text: m.text,
+                    driveFileId: m.driveFileId,
+                    ratio: m.ratio,
+                    model: m.model,
+                    createdAt: m.createdAt || Date.now()
+                  };
+                }
+                return m;
+              })
+            };
+          }
+
+          fetch("/api/drive/history", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ history: payload })
+          }).catch(err => console.warn("Drive sync error:", err));
+        }
+      } catch (e) {
+        console.warn("Storage error", e);
+      }
+    }
+
+    function renderSidebar() {
+      chatsList.innerHTML = "";
+      const sessionKeys = Object.keys(allSessions).sort((a, b) => (allSessions[b].createdAt || 0) - (allSessions[a].createdAt || 0));
+
+      sessionKeys.forEach(id => {
+        const session = allSessions[id];
+        const item = document.createElement("div");
+        item.className = "chat-item" + (id === activeChatId ? " active" : "");
+        item.innerHTML = `
+          <span style="margin-right: 6px; font-size: 0.85rem;">💬</span>
+          <span class="chat-item-title">${session.title || "Untitled Chat"}</span>
+          <button class="chat-del-btn" title="Delete Chat">🗑️</button>
+        `;
+
+        item.addEventListener("click", (e) => {
+          if (e.target.classList.contains("chat-del-btn")) {
+            e.stopPropagation();
+            deleteSession(id);
+            return;
+          }
+          switchChat(id);
+        });
+
+        chatsList.appendChild(item);
+      });
+    }
+
+    function switchChat(id) {
+      activeChatId = id;
+      localStorage.setItem("ai_active_chat_id", activeChatId);
+      renderSidebar();
+      renderActiveChat();
+      if (window.innerWidth < 1024) {
+        mobileTabChat.click();
+      }
+    }
+
+    function deleteSession(id) {
+      delete allSessions[id];
+      if (activeChatId === id) {
+        activeChatId = getFirstChatId();
+      }
+      saveAllSessions();
+      renderSidebar();
+      renderActiveChat();
+    }
+
+    newChatBtn.addEventListener("click", () => {
+      const newId = "chat_" + Date.now();
+      allSessions[newId] = {
+        id: newId,
+        title: "New Chat",
+        createdAt: Date.now(),
+        messages: []
+      };
+      saveAllSessions();
+      switchChat(newId);
+    });
+
+    function renderActiveChat() {
+      chatScroller.innerHTML = "";
+      const current = allSessions[activeChatId];
+      const messages = (current && current.messages) ? current.messages : [];
+
+      if (messages.length === 0) {
+        chatScroller.innerHTML = `
+          <div class="chat-bubble ai">
+            <div class="bubble-avatar">✨</div>
+            <div class="ai-card" style="padding: 16px;">
+              <div style="font-weight: 600; font-size: 0.98rem; margin-bottom: 6px;">How can I help you today?</div>
+              <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                • Switch to <b>🎨 Image</b> mode to generate 8K photorealistic art with FLUX.1.<br>
+                • Switch to <b>💬 Chat</b> mode to brainstorm ideas, write prompts, or converse with Gemini.
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      messages.forEach(item => {
+        if (item.type === "user") {
+          const userBubble = document.createElement("div");
+          userBubble.className = "chat-bubble user";
+          userBubble.innerHTML = `
+            <div class="bubble-avatar">👤</div>
+            <div class="user-text">${escapeHtml(item.prompt)}</div>
+          `;
+          chatScroller.appendChild(userBubble);
+        } else if (item.type === "ai") {
+          const aiBubble = document.createElement("div");
+          aiBubble.className = "chat-bubble ai";
+
+          if (item.text) {
+            // Text AI Response
+            aiBubble.innerHTML = `
+              <div class="bubble-avatar">✨</div>
+              <div class="ai-text-card">${escapeHtml(item.text)}</div>
+            `;
+          } else {
+            // Image AI Response
+            const driveBadge = item.driveFileId
+              ? `<a href="https://drive.google.com/file/d/${item.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
+              : `<span style="color: #94a3b8; font-size: 0.75rem;">(Saved)</span>`;
+
+            const imageSrc = item.dataUrl || (item.driveFileId ? `https://drive.google.com/thumbnail?id=${item.driveFileId}&sz=w800` : "");
+
+            aiBubble.innerHTML = `
+              <div class="bubble-avatar">✨</div>
+              <div class="ai-card">
+                <div class="ai-image-hero">
+                  <img src="${imageSrc}" alt="${escapeHtml(item.prompt)}" />
+                </div>
+                <div class="ai-meta-bar">
+                  <div style="display: flex; gap: 6px;">
+                    <span class="tag-pill">${item.ratio || "1:1"}</span>
+                    <span class="tag-pill">${item.model || "flux"}</span>
+                  </div>
+                  ${driveBadge}
+                </div>
+              </div>
+            `;
+
+            const imgEl = aiBubble.querySelector("img");
+            if (imgEl) {
+              imgEl.addEventListener("click", () => {
+                const driveUrl = item.driveFileId
+                  ? `https://drive.google.com/file/d/${item.driveFileId}/view`
+                  : "#";
+                openModal(imageSrc, driveUrl);
+              });
+            }
+          }
+
+          chatScroller.appendChild(aiBubble);
+        }
+      });
+
+      chatScroller.scrollTop = chatScroller.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Google Drive Sync of Chat Sessions
+    async function syncDriveHistory() {
+      try {
+        const res = await fetch("/api/drive/history");
+        const data = await res.json();
+        if (data.success && data.history && typeof data.history === "object") {
+          // If Drive has full sessions structure
+          const driveSessions = data.history;
+          let updated = false;
+
+          for (const [id, session] of Object.entries(driveSessions)) {
+            if (!allSessions[id] || (session.messages && session.messages.length > (allSessions[id].messages || []).length)) {
+              allSessions[id] = session;
+              updated = true;
+            }
+          }
+
+          if (updated) {
+            saveAllSessions(false);
+            renderSidebar();
+            renderActiveChat();
+          }
+        }
+      } catch (e) {
+        console.warn("Drive history sync error:", e);
+      }
+    }
+
+    // Google Drive Gallery
     connectBtn.addEventListener("click", () => window.location.href = "/api/auth/login");
     disconnectBtn.addEventListener("click", () => window.location.href = "/api/auth/logout");
 
-    // Fetch Google Drive Library
     async function fetchDriveFiles() {
       try {
         const res = await fetch("/api/drive/files");
@@ -853,79 +1306,91 @@
       if (e.target === modalOverlay) modalOverlay.classList.remove("active");
     });
 
-    // Persistent Local Chat Storage
-    function getStoredHistory() {
-      try {
-        return JSON.parse(localStorage.getItem("ai_chat_history") || "[]");
-      } catch (_) {
-        return [];
+    // Handle Generation / Chat Send
+    async function handleSend() {
+      const prompt = promptInput.value.trim();
+      if (!prompt) return;
+
+      promptInput.value = "";
+      promptInput.style.height = "auto";
+
+      if (!allSessions[activeChatId]) {
+        activeChatId = getFirstChatId();
       }
-    }
 
-    function saveHistory(history, syncToDrive = true) {
-      try {
-        const trimmed = history.slice(-50);
-        localStorage.setItem("ai_chat_history", JSON.stringify(trimmed));
+      const session = allSessions[activeChatId];
+      if (!session.messages) session.messages = [];
 
-        if (syncToDrive) {
-          // Send lightweight history to Drive (strip large base64 strings if driveFileId exists)
-          const drivePayload = trimmed.map(msg => {
-            if (msg.type === "ai" && msg.driveFileId) {
-              return {
-                type: msg.type,
-                prompt: msg.prompt,
-                ratio: msg.ratio,
-                model: msg.model,
-                driveFileId: msg.driveFileId,
-                createdAt: msg.createdAt || Date.now()
-              };
-            }
-            return msg;
-          });
+      // Auto title if first message
+      if (session.messages.length === 0) {
+        session.title = prompt.length > 28 ? prompt.substring(0, 28) + "..." : prompt;
+        renderSidebar();
+      }
 
-          fetch("/api/drive/history", {
+      // Append user bubble
+      const userBubble = document.createElement("div");
+      userBubble.className = "chat-bubble user";
+      userBubble.innerHTML = `
+        <div class="bubble-avatar">👤</div>
+        <div class="user-text">${escapeHtml(prompt)}</div>
+      `;
+      chatScroller.appendChild(userBubble);
+
+      session.messages.push({ type: "user", prompt });
+      saveAllSessions();
+
+      // Determine intent: image or text
+      const lower = prompt.toLowerCase();
+      const isImageIntent = currentMode === "image" ||
+        lower.startsWith("generate image") ||
+        lower.startsWith("create image") ||
+        lower.startsWith("draw ") ||
+        lower.startsWith("render ");
+
+      if (isImageIntent) {
+        // IMAGE GENERATION
+        const aiBubble = document.createElement("div");
+        aiBubble.className = "chat-bubble ai";
+        aiBubble.innerHTML = `
+          <div class="bubble-avatar">✨</div>
+          <div class="ai-card" style="padding: 16px; display: flex; align-items: center; gap: 10px;">
+            <div style="width: 16px; height: 16px; border: 2px solid #a8c7fa; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <span style="font-size: 0.88rem; color: var(--text-secondary);">Synthesizing with FLUX.1 8K...</span>
+          </div>
+        `;
+        chatScroller.appendChild(aiBubble);
+        chatScroller.scrollTop = chatScroller.scrollHeight;
+
+        try {
+          const res = await fetch("/api/generate", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ history: drivePayload })
-          }).catch(err => console.warn("Drive sync error:", err));
-        }
-      } catch (e) {
-        console.warn("Storage save error", e);
-      }
-    }
+            body: JSON.stringify({
+              prompt,
+              aspectRatio: ratioDropdown.value,
+              style: styleDropdown.value,
+              model: modelDropdown.value,
+              uploadToDrive: true
+            })
+          });
 
-    function renderSavedHistory() {
-      const history = getStoredHistory();
-      if (!history.length) return;
+          const data = await res.json();
+          if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
 
-      history.forEach(item => {
-        if (item.type === "user") {
-          const userBubble = document.createElement("div");
-          userBubble.className = "chat-bubble user";
-          userBubble.innerHTML = `
-            <div class="bubble-avatar">👤</div>
-            <div class="user-text">${item.prompt}</div>
-          `;
-          chatScroller.appendChild(userBubble);
-        } else if (item.type === "ai") {
-          const aiBubble = document.createElement("div");
-          aiBubble.className = "chat-bubble ai";
-          const driveBadge = item.driveFileId
-            ? `<a href="https://drive.google.com/file/d/${item.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
-            : `<span style="color: #94a3b8; font-size: 0.75rem;">(Saved)</span>`;
-
-          const imageSrc = item.dataUrl || (item.driveFileId ? `https://drive.google.com/thumbnail?id=${item.driveFileId}&sz=w800` : "");
+          const driveBadge = data.driveResult?.driveFileId
+            ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
+            : `<span style="color: #94a3b8; font-size: 0.75rem;">(Local Only)</span>`;
 
           aiBubble.innerHTML = `
             <div class="bubble-avatar">✨</div>
             <div class="ai-card">
               <div class="ai-image-hero">
-                <img src="${imageSrc}" alt="${item.prompt}" />
+                <img src="${data.dataUrl}" alt="${escapeHtml(prompt)}" />
               </div>
               <div class="ai-meta-bar">
                 <div style="display: flex; gap: 6px;">
-                  <span class="tag-pill">${item.ratio || "1:1"}</span>
-                  <span class="tag-pill">${item.model || "flux"}</span>
+                  <span class="tag-pill">${ratioDropdown.value}</span>
+                  <span class="tag-pill">${modelDropdown.value}</span>
                 </div>
                 ${driveBadge}
               </div>
@@ -933,151 +1398,97 @@
           `;
 
           const imgEl = aiBubble.querySelector("img");
-          imgEl.addEventListener("click", () => {
-            const driveUrl = item.driveFileId
-              ? `https://drive.google.com/file/d/${item.driveFileId}/view`
-              : "#";
-            openModal(imageSrc, driveUrl);
-          });
-
-          chatScroller.appendChild(aiBubble);
-        }
-      });
-      chatScroller.scrollTop = chatScroller.scrollHeight;
-    }
-
-    async function syncDriveHistory() {
-      try {
-        const res = await fetch("/api/drive/history");
-        const data = await res.json();
-        if (data.success && Array.isArray(data.history) && data.history.length > 0) {
-          const localHist = getStoredHistory();
-          if (data.history.length > localHist.length || localHist.length === 0) {
-            saveHistory(data.history, false);
-            chatScroller.innerHTML = "";
-            renderSavedHistory();
+          if (imgEl) {
+            imgEl.addEventListener("click", () => {
+              const driveUrl = data.driveResult?.driveFileId
+                ? `https://drive.google.com/file/d/${data.driveResult.driveFileId}/view`
+                : "#";
+              openModal(data.dataUrl, driveUrl);
+            });
           }
-        }
-      } catch (e) {
-        console.warn("Drive history sync error:", e);
-      }
-    }
 
-    renderSavedHistory();
-
-    // Send Generation Request
-    async function handleGenerate() {
-      const prompt = promptInput.value.trim();
-      if (!prompt) return;
-
-      promptInput.value = "";
-      promptInput.style.height = "auto";
-
-      // Append User message
-      const userBubble = document.createElement("div");
-      userBubble.className = "chat-bubble user";
-      userBubble.innerHTML = `
-        <div class="bubble-avatar">👤</div>
-        <div class="user-text">${prompt}</div>
-      `;
-      chatScroller.appendChild(userBubble);
-
-      const history = getStoredHistory();
-      history.push({ type: "user", prompt });
-      saveHistory(history);
-
-      // Append AI loading card
-      const aiBubble = document.createElement("div");
-      aiBubble.className = "chat-bubble ai";
-      aiBubble.innerHTML = `
-        <div class="bubble-avatar">✨</div>
-        <div class="ai-card" style="padding: 16px; display: flex; align-items: center; gap: 10px;">
-          <div style="width: 16px; height: 16px; border: 2px solid #a8c7fa; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <span style="font-size: 0.88rem; color: var(--text-secondary);">Synthesizing with ${modelDropdown.options[modelDropdown.selectedIndex].text}...</span>
-        </div>
-      `;
-      chatScroller.appendChild(aiBubble);
-      chatScroller.scrollTop = chatScroller.scrollHeight;
-
-      try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+          session.messages.push({
+            type: "ai",
             prompt,
-            aspectRatio: ratioDropdown.value,
-            style: styleDropdown.value,
+            dataUrl: data.dataUrl,
+            ratio: ratioDropdown.value,
             model: modelDropdown.value,
-            uploadToDrive: true
-          })
-        });
+            driveFileId: data.driveResult?.driveFileId
+          });
+          saveAllSessions();
+          fetchDriveFiles();
 
-        const data = await res.json();
-        if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
-
-        const driveBadge = data.driveResult?.driveFileId
-          ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
-          : `<span style="color: #94a3b8; font-size: 0.75rem;">(Local Only)</span>`;
-
+        } catch (err) {
+          aiBubble.innerHTML = `
+            <div class="bubble-avatar">⚠️</div>
+            <div class="ai-card" style="padding: 14px; color: #f87171; font-size: 0.85rem;">
+              <b>Error:</b> ${err.message}
+            </div>
+          `;
+        }
+      } else {
+        // TEXT CHAT CONVERSATION (Gemini)
+        const aiBubble = document.createElement("div");
+        aiBubble.className = "chat-bubble ai";
         aiBubble.innerHTML = `
           <div class="bubble-avatar">✨</div>
-          <div class="ai-card">
-            <div class="ai-image-hero">
-              <img src="${data.dataUrl}" alt="${prompt}" />
-            </div>
-            <div class="ai-meta-bar">
-              <div style="display: flex; gap: 6px;">
-                <span class="tag-pill">${ratioDropdown.value}</span>
-                <span class="tag-pill">${modelDropdown.value}</span>
-              </div>
-              ${driveBadge}
-            </div>
+          <div class="ai-text-card" style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 14px; height: 14px; border: 2px solid #c58af9; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+            <span style="font-size: 0.85rem; color: var(--text-secondary);">Gemini is thinking...</span>
           </div>
         `;
-
-        const imgEl = aiBubble.querySelector("img");
-        imgEl.addEventListener("click", () => {
-          const driveUrl = data.driveResult?.driveFileId
-            ? `https://drive.google.com/file/d/${data.driveResult.driveFileId}/view`
-            : "#";
-          openModal(data.dataUrl, driveUrl);
-        });
-
-        // Save AI response to persistent storage
-        const currentHist = getStoredHistory();
-        currentHist.push({
-          type: "ai",
-          prompt,
-          dataUrl: data.dataUrl,
-          ratio: ratioDropdown.value,
-          model: modelDropdown.value,
-          driveFileId: data.driveResult?.driveFileId
-        });
-        saveHistory(currentHist);
-
-        // Trigger real-time library refresh
-        fetchDriveFiles();
-
-      } catch (err) {
-        aiBubble.innerHTML = `
-          <div class="bubble-avatar">⚠️</div>
-          <div class="ai-card" style="padding: 14px; color: #f87171; font-size: 0.85rem;">
-            <b>Error:</b> ${err.message}
-          </div>
-        `;
-      } finally {
+        chatScroller.appendChild(aiBubble);
         chatScroller.scrollTop = chatScroller.scrollHeight;
+
+        try {
+          const res = await fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: prompt,
+              messages: session.messages
+            })
+          });
+
+          const data = await res.json();
+          if (!res.ok || data.error) throw new Error(data.error || "Chat failed");
+
+          const replyText = data.reply || "Done!";
+          aiBubble.innerHTML = `
+            <div class="bubble-avatar">✨</div>
+            <div class="ai-text-card">${escapeHtml(replyText)}</div>
+          `;
+
+          session.messages.push({
+            type: "ai",
+            text: replyText
+          });
+          saveAllSessions();
+
+        } catch (err) {
+          aiBubble.innerHTML = `
+            <div class="bubble-avatar">⚠️</div>
+            <div class="ai-card" style="padding: 14px; color: #f87171; font-size: 0.85rem;">
+              <b>Error:</b> ${err.message}
+            </div>
+          `;
+        }
       }
+
+      chatScroller.scrollTop = chatScroller.scrollHeight;
     }
 
-    sendPromptBtn.addEventListener("click", handleGenerate);
+    sendPromptBtn.addEventListener("click", handleSend);
     promptInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        handleGenerate();
+        handleSend();
       }
     });
 
+    // Initial Load
+    renderSidebar();
+    renderActiveChat();
     fetchDriveFiles();
   </script>
 </body>

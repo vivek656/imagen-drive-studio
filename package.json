@@ -4,6 +4,7 @@
   "type": "module",
   "dependencies": {
     "@google/genai": "^3.6.1",
+    "@huggingface/inference": "^4.13.33",
     "googleapis": "^144.0.0"
   }
 }
