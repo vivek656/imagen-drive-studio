@@ -3,53 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Imagen AI Studio & Drive Gallery</title>
+  <title>Gemini & Imagen AI Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0f19;
-      --card-bg: #141b2b;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --accent: #38bdf8;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --bubble-user: #232738;
-      --bubble-ai: #161e31;
+      --bg-main: #131314;
+      --bg-sidebar: #1e1f20;
+      --bg-surface: #282a2c;
+      --bg-pill: #333538;
+      --bg-input: #1e1f20;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-hover: rgba(255, 255, 255, 0.18);
+      --text-main: #e3e3e3;
+      --text-secondary: #9ea3ab;
+      --accent-blue: #a8c7fa;
+      --accent-purple: #c58af9;
+      --primary: #1a73e8;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
 
     html, body {
       height: 100%;
       height: 100dvh;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--bg-main);
+      color: var(--text-main);
       overflow: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    /* Header */
+    /* Top Sleek Navigation Bar */
     header {
-      height: 60px;
-      padding: 0 1.5rem;
-      border-bottom: 1px solid var(--card-border);
-      background: rgba(11, 15, 25, 0.95);
-      backdrop-filter: blur(12px);
+      height: 56px;
+      padding: 0 1.25rem;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
+      background: rgba(19, 19, 20, 0.85);
+      backdrop-filter: blur(20px);
       z-index: 50;
     }
 
@@ -59,97 +61,103 @@
       gap: 12px;
     }
 
-    .logo-badge {
-      background: linear-gradient(135deg, #6366f1, #a855f7);
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+    .gemini-sparkle {
+      width: 28px;
+      height: 28px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb, #38bdf8);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: 800;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      font-size: 0.95rem;
     }
 
-    .brand h1 {
-      font-size: 1.1rem;
-      font-weight: 700;
+    .brand-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      background: linear-gradient(90deg, #ffffff, #c4b5fd, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    /* Mobile view toggle (hidden on desktop) */
-    .mobile-view-toggle {
+    /* View Switcher (Mobile & Tablet) */
+    .view-switcher {
       display: none;
-      background: rgba(15, 23, 42, 0.8);
+      background: var(--bg-surface);
       padding: 3px;
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
     }
 
     @media (max-width: 1023px) {
-      .mobile-view-toggle {
+      .view-switcher {
         display: flex;
       }
     }
 
-    .tab-btn {
+    .switch-btn {
       padding: 6px 14px;
-      border-radius: 8px;
+      border-radius: 16px;
       border: none;
       background: transparent;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
-    .tab-btn.active {
-      background: var(--primary);
+    .switch-btn.active {
+      background: var(--bg-pill);
       color: #fff;
     }
 
-    .drive-status {
+    /* Drive Connection Pill */
+    .drive-pill {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.8rem;
+      padding: 6px 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      font-size: 0.78rem;
     }
 
-    .dot {
-      width: 9px;
-      height: 9px;
+    .status-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: #f59e0b;
-      box-shadow: 0 0 10px #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
     }
 
-    .auth-btn {
-      background: #6366f1;
-      color: white;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .disconnect-btn {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      padding: 5px 12px;
-      border-radius: 8px;
-      font-size: 0.78rem;
+    .auth-link {
+      color: var(--accent-blue);
+      text-decoration: none;
       font-weight: 600;
       cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 0.78rem;
     }
 
-    /* Main Grid Layout */
+    .disconnect-link {
+      color: #f87171;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-size: 0.75rem;
+    }
+
+    /* Main App Layout */
     main {
       flex: 1;
       display: grid;
-      grid-template-columns: 560px 1fr;
+      grid-template-columns: 520px 1fr;
       overflow: hidden;
       min-height: 0;
     }
@@ -157,315 +165,382 @@
     @media (max-width: 1023px) {
       main {
         display: flex;
-        flex-direction: column;
       }
-      .pane {
+      .panel {
         display: none !important;
         width: 100%;
         height: 100%;
       }
-      .pane.active {
+      .panel.active {
         display: flex !important;
       }
     }
 
-    /* Left Pane: Chat Studio */
-    #chatPane {
-      border-right: 1px solid var(--card-border);
+    /* LEFT PANEL: Modern Conversational Stream */
+    #chatPanel {
       display: flex;
       flex-direction: column;
       height: 100%;
       min-height: 0;
-      background: rgba(11, 15, 25, 0.5);
+      border-right: 1px solid var(--border-color);
+      position: relative;
+      background: var(--bg-main);
     }
 
-    .chat-messages {
+    .chat-scroller {
       flex: 1;
       overflow-y: auto;
-      padding: 1.25rem 1.25rem 1rem 1.25rem;
+      padding: 1.5rem 1.25rem 1rem 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
       scroll-behavior: smooth;
       min-height: 0;
     }
 
-    .message {
-      max-width: 92%;
+    .chat-bubble {
       display: flex;
-      flex-direction: column;
-      animation: fadeIn 0.2s ease-out;
+      gap: 12px;
+      max-width: 94%;
+      animation: messageAppear 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px); }
+    @keyframes messageAppear {
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .message.user {
+    .chat-bubble.user {
       align-self: flex-end;
-      background: var(--bubble-user);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 16px;
-      border-radius: 16px 16px 4px 16px;
-      font-size: 0.95rem;
+      flex-direction: row-reverse;
     }
 
-    .message.ai {
-      align-self: flex-start;
-      background: var(--bubble-ai);
-      border: 1px solid var(--card-border);
-      border-radius: 16px 16px 16px 4px;
+    .bubble-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .user-text {
+      background: var(--bg-surface);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: #fff;
+    }
+
+    /* AI Generated Card (Gemini / ChatGPT Style) */
+    .ai-card {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
       overflow: hidden;
       width: 100%;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
     }
 
-    /* FULL UNCROPPED IMAGE DISPLAY */
-    .ai-img-wrapper {
+    .ai-image-hero {
       position: relative;
       width: 100%;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      overflow: hidden;
+      cursor: zoom-in;
     }
 
-    .ai-img-wrapper img {
+    .ai-image-hero img {
       width: 100%;
       height: auto;
-      max-height: 520px;
+      max-height: 540px;
       object-fit: contain;
       display: block;
-      border-bottom: 1px solid var(--card-border);
     }
 
-    .ai-content {
+    .ai-meta-bar {
       padding: 12px 16px;
-    }
-
-    .ai-prompt {
-      font-size: 0.88rem;
-      font-weight: 500;
-      color: #cbd5e1;
-      margin-bottom: 8px;
-    }
-
-    .ai-actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-surface);
+      font-size: 0.8rem;
+    }
+
+    .tag-pill {
+      background: var(--bg-pill);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .drive-status-badge {
+      color: #34d399;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
       font-size: 0.78rem;
     }
 
-    .action-pill {
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--accent);
-      padding: 6px 12px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      border: 1px solid var(--card-border);
-      transition: all 0.2s;
-    }
-
-    .action-pill:hover {
-      background: rgba(255, 255, 255, 0.15);
-      color: #fff;
-    }
-
-    /* Modern Dropdown & Chip Controls (Clean UX, No Infinite Horizontal Scrolling) */
-    .chat-controls-wrapper {
-      background: #111726;
-      border-top: 1px solid var(--card-border);
-      padding: 12px 16px;
+    /* ============================================================
+       ChatGPT / Gemini Floating Prompt Box
+       ============================================================ */
+    .prompt-container {
+      padding: 1rem 1.25rem 1.25rem 1.25rem;
+      background: linear-gradient(to top, var(--bg-main) 85%, transparent);
       flex-shrink: 0;
     }
 
-    .controls-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .control-select-group {
+    .floating-input-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 10px 14px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 8px;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .control-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
+    .floating-input-card:focus-within {
+      border-color: rgba(255, 255, 255, 0.28);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
     }
 
-    .styled-select {
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--card-border);
-      color: var(--text);
-      font-size: 0.82rem;
-      font-weight: 600;
-      padding: 8px 10px;
-      border-radius: 8px;
+    .input-textarea {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 0.95rem;
+      resize: none;
+      min-height: 48px;
+      max-height: 140px;
+      line-height: 1.5;
+    }
+
+    .input-textarea::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .input-actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Gemini-style parameter chips */
+    .param-chips-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .param-dropdown {
+      background: var(--bg-pill);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 5px 10px;
+      border-radius: 14px;
+      font-size: 0.75rem;
+      font-weight: 500;
       outline: none;
       cursor: pointer;
-      width: 100%;
+      transition: background 0.2s, border-color 0.2s;
     }
 
-    .styled-select:focus {
-      border-color: var(--accent);
+    .param-dropdown:hover {
+      background: #404347;
+      border-color: var(--border-hover);
     }
 
-    .input-row {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .input-box {
-      flex: 1;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 16px;
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-    }
-
-    .input-box:focus {
-      border-color: var(--accent);
-    }
-
-    .send-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #6366f1, #3b82f6);
+    .submit-button {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fff;
       border: none;
-      color: #fff;
+      color: #000;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
       cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
       flex-shrink: 0;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
-      transition: transform 0.15s;
     }
 
-    .send-btn:hover {
-      transform: scale(1.03);
+    .submit-button:hover {
+      transform: scale(1.06);
     }
 
-    /* Right Pane: Google Drive Gallery */
-    #galleryPane {
+    .submit-button:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* RIGHT PANEL: Modern Photo Library Grid */
+    #libraryPanel {
       display: flex;
       flex-direction: column;
       height: 100%;
       min-height: 0;
-      background: var(--bg);
+      background: var(--bg-main);
     }
 
-    .gallery-header {
-      padding: 1rem 1.75rem;
-      border-bottom: 1px solid var(--card-border);
+    .library-topbar {
+      height: 56px;
+      padding: 0 1.5rem;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-shrink: 0;
     }
 
-    .gallery-content {
+    .library-heading {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .library-counter {
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+    }
+
+    .library-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ghost-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 14px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .ghost-btn:hover {
+      background: var(--bg-pill);
+      border-color: var(--border-hover);
+    }
+
+    .library-scroll {
       flex: 1;
       overflow-y: auto;
       padding: 1.5rem;
       min-height: 0;
     }
 
-    .grid-container {
+    .masonry-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
     }
 
-    @media (min-width: 1440px) {
-      .grid-container {
+    @media (min-width: 1400px) {
+      .masonry-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 20px;
       }
     }
 
-    .grid-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 14px;
+    .gallery-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
       overflow: hidden;
       cursor: pointer;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
     }
 
-    .grid-card:hover {
+    .gallery-item:hover {
       transform: translateY(-4px);
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-      border-color: rgba(99, 102, 241, 0.5);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+      border-color: var(--border-hover);
     }
 
-    .grid-thumb {
+    .item-thumbnail {
       width: 100%;
       aspect-ratio: 1 / 1;
       background: #000;
       overflow: hidden;
+      position: relative;
     }
 
-    .grid-thumb img {
+    .item-thumbnail img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s;
+      transition: transform 0.35s ease;
     }
 
-    .grid-card:hover .grid-thumb img {
-      transform: scale(1.05);
+    .gallery-item:hover .item-thumbnail img {
+      transform: scale(1.06);
     }
 
-    .grid-info {
-      padding: 10px 12px;
+    .item-info {
+      padding: 10px 14px;
+      background: var(--bg-surface);
     }
 
-    .grid-name {
+    .item-title {
       font-size: 0.82rem;
-      font-weight: 600;
+      font-weight: 500;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .grid-meta {
+    .item-details {
       font-size: 0.72rem;
-      color: var(--text-muted);
+      color: var(--text-secondary);
       margin-top: 4px;
       display: flex;
       justify-content: space-between;
     }
 
-    /* Lightbox Modal */
-    .lightbox {
+    /* Modern Lightbox Modal */
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.94);
-      backdrop-filter: blur(20px);
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(25px);
       z-index: 100;
       flex-direction: column;
       align-items: center;
@@ -473,34 +548,37 @@
       padding: 1.5rem;
     }
 
-    .lightbox.active {
+    .modal-overlay.active {
       display: flex;
     }
 
-    .lightbox-close {
+    .modal-close-btn {
       position: absolute;
       top: 20px;
       right: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: #fff;
-      font-size: 1.5rem;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      color: #fff;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
     }
 
-    .lightbox-img {
-      max-width: 92%;
-      max-height: 82vh;
-      border-radius: 12px;
+    .modal-img {
+      max-width: 90%;
+      max-height: 80vh;
+      border-radius: 14px;
       object-fit: contain;
-      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
     }
 
-    .lightbox-bar {
-      margin-top: 16px;
+    .modal-toolbar {
+      margin-top: 18px;
       display: flex;
       gap: 12px;
     }
@@ -508,101 +586,107 @@
 </head>
 <body>
 
+  <!-- Sleek Top Header -->
   <header>
     <div class="brand">
-      <div class="logo-badge">I3</div>
-      <div>
-        <h1>Imagen AI Studio</h1>
-      </div>
+      <div class="gemini-sparkle">✨</div>
+      <div class="brand-title">Imagen Studio</div>
     </div>
 
-    <!-- Mobile Switcher -->
-    <div class="mobile-view-toggle">
-      <button class="tab-btn active" id="tabChat">💬 Chat</button>
-      <button class="tab-btn" id="tabGallery">🖼️ Library</button>
+    <!-- Mobile view toggle -->
+    <div class="view-switcher">
+      <button class="switch-btn active" id="mobileTabChat">Chat</button>
+      <button class="switch-btn" id="mobileTabLibrary">Library</button>
     </div>
 
-    <!-- Google Drive Sync Status -->
-    <div class="drive-status" id="driveStatus">
-      <span class="dot" id="statusDot"></span>
-      <span id="statusText">Checking Drive...</span>
-      <button id="connectDriveBtn" class="auth-btn" style="display: none;">🔗 Connect Drive</button>
-      <button id="disconnectDriveBtn" class="disconnect-btn" style="display: none;">Disconnect</button>
+    <!-- Google Drive Sync Status Pill -->
+    <div class="drive-pill" id="drivePill">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusLabel" style="color: var(--text-secondary);">Connecting...</span>
+      <button id="connectBtn" class="auth-link" style="display: none;">Connect Drive</button>
+      <button id="disconnectBtn" class="disconnect-link" style="display: none;">Disconnect</button>
     </div>
   </header>
 
   <main>
-    <!-- LEFT: Chat Generation Studio -->
-    <section class="pane active" id="chatPane">
-      <div class="chat-messages" id="chatMessages">
-        <div class="message ai">
-          <div class="ai-content">
-            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to AI Studio ✨</div>
-            <div style="font-size: 0.82rem; color: var(--text-muted);">
-              Type any prompt below. Images generate in high-res and automatically backup to your Google Drive library on the right!
+    <!-- LEFT PANEL: ChatGPT / Gemini Style Chat Stream -->
+    <section class="panel active" id="chatPanel">
+      <div class="chat-scroller" id="chatScroller">
+        <!-- Initial Assistant Greeting -->
+        <div class="chat-bubble ai">
+          <div class="bubble-avatar">✨</div>
+          <div class="ai-card" style="padding: 16px;">
+            <div style="font-weight: 600; font-size: 0.98rem; margin-bottom: 6px;">How can I help you visualize today?</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+              Type any visual concept below. Images are generated in high resolution with FLUX / SDXL and automatically synchronized into your Google Drive library on the right.
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Controls & Input Bar (Clean Dropdowns, No Endless Scrolling) -->
-      <div class="chat-controls-wrapper">
-        <div class="controls-grid">
-          <div class="control-select-group">
-            <label class="control-label">AI Model</label>
-            <select id="modelSelect" class="styled-select">
-              <option value="flux">⚡ FLUX.1 (Flagship)</option>
-              <option value="flux-realism">✨ Photoreal</option>
-              <option value="flux-anime">🎨 Anime / Concept</option>
-              <option value="turbo">🚀 SDXL Turbo</option>
-            </select>
-          </div>
+      <!-- ChatGPT Floating Input Box -->
+      <div class="prompt-container">
+        <div class="floating-input-card">
+          <textarea id="promptInput" class="input-textarea" placeholder="Ask Imagen to generate anything... (Shift+Enter for new line)" rows="1"></textarea>
 
-          <div class="control-select-group">
-            <label class="control-label">Aesthetic Style</label>
-            <select id="styleSelect" class="styled-select">
-              <option value="editorial">📸 Editorial (Leibovitz)</option>
-              <option value="cinematic">🎬 Cinematic (Villeneuve)</option>
-              <option value="fineart">🖼️ Fine Art</option>
-              <option value="noir">🌑 Noir</option>
-              <option value="raw">⚡ Raw (Unenhanced)</option>
-            </select>
-          </div>
+          <div class="input-actions-row">
+            <!-- Parameter Chips (Gemini style) -->
+            <div class="param-chips-group">
+              <select id="modelDropdown" class="param-dropdown">
+                <option value="flux">⚡ FLUX.1 (Pro Quality)</option>
+                <option value="flux-realism">✨ Photoreal</option>
+                <option value="flux-anime">🎨 Anime / Concept</option>
+                <option value="turbo">🚀 Fast SDXL Turbo</option>
+              </select>
 
-          <div class="control-select-group">
-            <label class="control-label">Aspect Ratio</label>
-            <select id="ratioSelect" class="styled-select">
-              <option value="1:1">Square (1:1)</option>
-              <option value="16:9">Landscape (16:9)</option>
-              <option value="9:16">Portrait / Mobile (9:16)</option>
-              <option value="4:3">Standard (4:3)</option>
-              <option value="3:4">Tall (3:4)</option>
-            </select>
-          </div>
-        </div>
+              <select id="styleDropdown" class="param-dropdown">
+                <option value="editorial">📸 Editorial</option>
+                <option value="cinematic">🎬 Cinematic</option>
+                <option value="fineart">🖼️ Fine Art</option>
+                <option value="noir">🌑 Noir</option>
+                <option value="raw">⚡ Raw Style</option>
+              </select>
 
-        <div class="input-row">
-          <input type="text" id="chatInput" class="input-box" placeholder="Describe the image you want to create..." enterkeyhint="send" />
-          <button id="sendBtn" class="send-btn">➔</button>
+              <select id="ratioDropdown" class="param-dropdown">
+                <option value="1:1">1:1 Square</option>
+                <option value="16:9">16:9 Landscape</option>
+                <option value="9:16">9:16 Portrait</option>
+                <option value="4:3">4:3 Standard</option>
+                <option value="3:4">3:4 Poster</option>
+              </select>
+            </div>
+
+            <!-- Modern Send Button -->
+            <button id="sendPromptBtn" class="submit-button" title="Generate (Enter)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT: Google Drive Gallery -->
-    <section class="pane" id="galleryPane">
-      <div class="gallery-header">
-        <div>
-          <h2 style="font-size: 1.1rem; font-weight: 700;">Google Drive Library</h2>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Saved in: Imagen-AI-Gallery</div>
+    <!-- RIGHT PANEL: Sleek Google Drive Library -->
+    <section class="panel" id="libraryPanel">
+      <div class="library-topbar">
+        <div class="library-heading">
+          <span>Google Drive Library</span>
+          <span class="library-counter" id="itemCountBadge">0 items</span>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Open Folder in Drive</a>
-          <button id="refreshGridBtn" class="action-pill" style="cursor: pointer;">🔄 Refresh</button>
+        <div class="library-actions">
+          <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="ghost-btn">
+            📂 Open Drive
+          </a>
+          <button id="refreshLibraryBtn" class="ghost-btn">
+            🔄 Refresh
+          </button>
         </div>
       </div>
 
-      <div class="gallery-content">
-        <div class="grid-container" id="gridContainer">
+      <div class="library-scroll">
+        <div class="masonry-grid" id="masonryGrid">
           <!-- Populated from Google Drive -->
         </div>
       </div>
@@ -610,61 +694,71 @@
   </main>
 
   <!-- Fullscreen Modal / Lightbox -->
-  <div class="lightbox" id="lightbox">
-    <button class="lightbox-close" id="lightboxClose">×</button>
-    <img class="lightbox-img" id="lightboxImg" alt="Enlarged" />
-    <div class="lightbox-bar">
-      <a id="lightboxDriveLink" href="#" target="_blank" class="action-pill" style="font-size: 0.85rem; padding: 8px 14px;">📂 View in Google Drive</a>
-      <a id="lightboxDownload" href="#" download="generated.jpg" class="action-pill" style="font-size: 0.85rem; padding: 8px 14px;">⬇️ Download</a>
+  <div class="modal-overlay" id="modalOverlay">
+    <button class="modal-close-btn" id="modalCloseBtn">✕</button>
+    <img class="modal-img" id="modalImg" alt="Preview" />
+    <div class="modal-toolbar">
+      <a id="modalDriveBtn" href="#" target="_blank" class="ghost-btn" style="padding: 10px 16px;">📂 Open in Google Drive</a>
+      <a id="modalDownloadBtn" href="#" download="ai_image.jpg" class="ghost-btn" style="padding: 10px 16px;">⬇️ Download</a>
     </div>
   </div>
 
   <script>
-    const tabChat = document.getElementById("tabChat");
-    const tabGallery = document.getElementById("tabGallery");
-    const chatPane = document.getElementById("chatPane");
-    const galleryPane = document.getElementById("galleryPane");
-    const chatMessages = document.getElementById("chatMessages");
-    const chatInput = document.getElementById("chatInput");
-    const sendBtn = document.getElementById("sendBtn");
-    const modelSelect = document.getElementById("modelSelect");
-    const styleSelect = document.getElementById("styleSelect");
-    const ratioSelect = document.getElementById("ratioSelect");
-    const gridContainer = document.getElementById("gridContainer");
-    const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
-    const connectDriveBtn = document.getElementById("connectDriveBtn");
-    const disconnectDriveBtn = document.getElementById("disconnectDriveBtn");
+    const chatPanel = document.getElementById("chatPanel");
+    const libraryPanel = document.getElementById("libraryPanel");
+    const mobileTabChat = document.getElementById("mobileTabChat");
+    const mobileTabLibrary = document.getElementById("mobileTabLibrary");
+
+    const chatScroller = document.getElementById("chatScroller");
+    const promptInput = document.getElementById("promptInput");
+    const sendPromptBtn = document.getElementById("sendPromptBtn");
+    const modelDropdown = document.getElementById("modelDropdown");
+    const styleDropdown = document.getElementById("styleDropdown");
+    const ratioDropdown = document.getElementById("ratioDropdown");
+
+    const masonryGrid = document.getElementById("masonryGrid");
+    const itemCountBadge = document.getElementById("itemCountBadge");
+    const refreshLibraryBtn = document.getElementById("refreshLibraryBtn");
     const driveFolderLink = document.getElementById("driveFolderLink");
-    const refreshGridBtn = document.getElementById("refreshGridBtn");
 
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = document.getElementById("lightboxImg");
-    const lightboxClose = document.getElementById("lightboxClose");
-    const lightboxDriveLink = document.getElementById("lightboxDriveLink");
-    const lightboxDownload = document.getElementById("lightboxDownload");
+    const statusDot = document.getElementById("statusDot");
+    const statusLabel = document.getElementById("statusLabel");
+    const connectBtn = document.getElementById("connectBtn");
+    const disconnectBtn = document.getElementById("disconnectBtn");
 
-    // Mobile Switchers
-    tabChat.addEventListener("click", () => {
-      tabChat.classList.add("active");
-      tabGallery.classList.remove("active");
-      chatPane.classList.add("active");
-      galleryPane.classList.remove("active");
+    const modalOverlay = document.getElementById("modalOverlay");
+    const modalImg = document.getElementById("modalImg");
+    const modalCloseBtn = document.getElementById("modalCloseBtn");
+    const modalDriveBtn = document.getElementById("modalDriveBtn");
+    const modalDownloadBtn = document.getElementById("modalDownloadBtn");
+
+    // Auto-grow textarea
+    promptInput.addEventListener("input", () => {
+      promptInput.style.height = "auto";
+      promptInput.style.height = Math.min(promptInput.scrollHeight, 140) + "px";
     });
 
-    tabGallery.addEventListener("click", () => {
-      tabGallery.classList.add("active");
-      tabChat.classList.remove("active");
-      galleryPane.classList.add("active");
-      chatPane.classList.remove("active");
-      loadDriveFiles();
+    // Mobile tabs
+    mobileTabChat.addEventListener("click", () => {
+      mobileTabChat.classList.add("active");
+      mobileTabLibrary.classList.remove("active");
+      chatPanel.classList.add("active");
+      libraryPanel.classList.remove("active");
     });
 
-    connectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/login");
-    disconnectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/logout");
+    mobileTabLibrary.addEventListener("click", () => {
+      mobileTabLibrary.classList.add("active");
+      mobileTabChat.classList.remove("active");
+      libraryPanel.classList.add("active");
+      chatPanel.classList.remove("active");
+      fetchDriveFiles();
+    });
 
-    // Fetch Google Drive Files
-    async function loadDriveFiles() {
+    connectBtn.addEventListener("click", () => window.location.href = "/api/auth/login");
+    disconnectBtn.addEventListener("click", () => window.location.href = "/api/auth/logout");
+
+    // Fetch Google Drive Library
+    async function fetchDriveFiles() {
       try {
         const res = await fetch("/api/drive/files");
         const data = await res.json();
@@ -672,94 +766,104 @@
         if (data.connected) {
           statusDot.style.background = "#34d399";
           statusDot.style.boxShadow = "0 0 10px #34d399";
-          statusText.textContent = "Google Drive Connected";
-          connectDriveBtn.style.display = "none";
-          disconnectDriveBtn.style.display = "inline-block";
+          statusLabel.textContent = "Drive Connected";
+          connectBtn.style.display = "none";
+          disconnectBtn.style.display = "inline";
         } else {
           statusDot.style.background = "#f59e0b";
           statusDot.style.boxShadow = "0 0 10px #f59e0b";
-          statusText.textContent = "Drive Not Connected";
-          connectDriveBtn.style.display = "inline-block";
-          disconnectDriveBtn.style.display = "none";
+          statusLabel.textContent = "Drive Offline";
+          connectBtn.style.display = "inline";
+          disconnectBtn.style.display = "none";
         }
 
         if (data.folderId) {
           driveFolderLink.href = `https://drive.google.com/drive/folders/${data.folderId}`;
         }
 
-        gridContainer.innerHTML = "";
-        if (!data.files || data.files.length === 0) {
-          gridContainer.innerHTML = `
-            <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 60px 20px;">
-              <div style="font-size: 2rem; margin-bottom: 8px;">📂</div>
-              <div style="font-weight: 600;">No images in Drive folder yet</div>
-              <div style="font-size: 0.8rem; margin-top: 4px;">Connect Drive and generate an image to sync it here!</div>
+        masonryGrid.innerHTML = "";
+        const files = data.files || [];
+        itemCountBadge.textContent = `${files.length} items`;
+
+        if (files.length === 0) {
+          masonryGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-secondary); padding: 70px 20px;">
+              <div style="font-size: 2.2rem; margin-bottom: 10px;">✨</div>
+              <div style="font-weight: 600; font-size: 0.95rem;">Your Google Drive Library is empty</div>
+              <div style="font-size: 0.8rem; margin-top: 6px;">Connect your account and generate your first image!</div>
             </div>`;
           return;
         }
 
-        data.files.forEach(file => {
-          const card = document.createElement("div");
-          card.className = "grid-card";
-          const thumbUrl = `https://lh3.googleusercontent.com/u/0/d/${file.id}=w400`;
-          const viewUrl = `https://drive.google.com/file/d/${file.id}/view`;
+        files.forEach(file => {
+          const item = document.createElement("div");
+          item.className = "gallery-item";
+          const thumbUrl = `https://lh3.googleusercontent.com/u/0/d/${file.id}=w500`;
+          const driveUrl = `https://drive.google.com/file/d/${file.id}/view`;
 
-          card.innerHTML = `
-            <div class="grid-thumb">
+          item.innerHTML = `
+            <div class="item-thumbnail">
               <img src="${thumbUrl}" alt="${file.name}" loading="lazy" />
             </div>
-            <div class="grid-info">
-              <div class="grid-name">${file.name}</div>
-              <div class="grid-meta">
+            <div class="item-info">
+              <div class="item-title" title="${file.name}">${file.name}</div>
+              <div class="item-details">
                 <span>${file.size ? (parseInt(file.size)/1024).toFixed(0) + ' KB' : 'Saved'}</span>
                 <span>${file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : ''}</span>
               </div>
             </div>
           `;
-          card.addEventListener("click", () => openLightbox(thumbUrl, viewUrl));
-          gridContainer.appendChild(card);
+          item.addEventListener("click", () => openModal(thumbUrl, driveUrl));
+          masonryGrid.appendChild(item);
         });
       } catch (err) {
         console.error(err);
       }
     }
 
-    refreshGridBtn.addEventListener("click", loadDriveFiles);
+    refreshLibraryBtn.addEventListener("click", fetchDriveFiles);
 
-    function openLightbox(imgSrc, driveUrl) {
-      lightboxImg.src = imgSrc;
-      lightboxDriveLink.href = driveUrl;
-      lightboxDownload.href = imgSrc;
-      lightbox.classList.add("active");
+    function openModal(imgSrc, driveUrl) {
+      modalImg.src = imgSrc;
+      modalDriveBtn.href = driveUrl;
+      modalDownloadBtn.href = imgSrc;
+      modalOverlay.classList.add("active");
     }
 
-    lightboxClose.addEventListener("click", () => lightbox.classList.remove("active"));
-    lightbox.addEventListener("click", (e) => {
-      if (e.target === lightbox) lightbox.classList.remove("active");
+    modalCloseBtn.addEventListener("click", () => modalOverlay.classList.remove("active"));
+    modalOverlay.addEventListener("click", (e) => {
+      if (e.target === modalOverlay) modalOverlay.classList.remove("active");
     });
 
-    // Handle Generation
-    async function handleSend() {
-      const prompt = chatInput.value.trim();
+    // Send Generation Request
+    async function handleGenerate() {
+      const prompt = promptInput.value.trim();
       if (!prompt) return;
 
-      chatInput.value = "";
+      promptInput.value = "";
+      promptInput.style.height = "auto";
 
-      const userMsg = document.createElement("div");
-      userMsg.className = "message user";
-      userMsg.textContent = prompt;
-      chatMessages.appendChild(userMsg);
+      // Append User message
+      const userBubble = document.createElement("div");
+      userBubble.className = "chat-bubble user";
+      userBubble.innerHTML = `
+        <div class="bubble-avatar">👤</div>
+        <div class="user-text">${prompt}</div>
+      `;
+      chatScroller.appendChild(userBubble);
 
-      const aiMsg = document.createElement("div");
-      aiMsg.className = "message ai";
-      aiMsg.innerHTML = `
-        <div class="ai-content" style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 14px; height: 14px; border: 2px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <span style="font-size: 0.85rem; color: var(--text-muted);">Generating image with ${modelSelect.options[modelSelect.selectedIndex].text}...</span>
+      // Append AI loading card
+      const aiBubble = document.createElement("div");
+      aiBubble.className = "chat-bubble ai";
+      aiBubble.innerHTML = `
+        <div class="bubble-avatar">✨</div>
+        <div class="ai-card" style="padding: 16px; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 16px; height: 16px; border: 2px solid #a8c7fa; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <span style="font-size: 0.88rem; color: var(--text-secondary);">Synthesizing with ${modelDropdown.options[modelDropdown.selectedIndex].text}...</span>
         </div>
       `;
-      chatMessages.appendChild(aiMsg);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      chatScroller.appendChild(aiBubble);
+      chatScroller.scrollTop = chatScroller.scrollHeight;
 
       try {
         const res = await fetch("/api/generate", {
@@ -767,9 +871,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             prompt,
-            aspectRatio: ratioSelect.value,
-            style: styleSelect.value,
-            model: modelSelect.value,
+            aspectRatio: ratioDropdown.value,
+            style: styleDropdown.value,
+            model: modelDropdown.value,
             uploadToDrive: true
           })
         });
@@ -777,51 +881,58 @@
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
 
-        const driveLink = data.driveResult?.driveFileId
-          ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="action-pill">📂 Saved to Drive ↗</a>`
-          : `<span style="font-size: 0.72rem; color: #f59e0b;">(Saved Locally)</span>`;
+        const driveBadge = data.driveResult?.driveFileId
+          ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="drive-status-badge">☁️ Synced to Drive ↗</a>`
+          : `<span style="color: #94a3b8; font-size: 0.75rem;">(Local Only)</span>`;
 
-        aiMsg.innerHTML = `
-          <div class="ai-img-wrapper">
-            <img src="${data.dataUrl}" alt="Generated result" />
-          </div>
-          <div class="ai-content">
-            <div class="ai-prompt">${prompt}</div>
-            <div class="ai-actions">
-              <span><b>${ratioSelect.value}</b> · <b>${modelSelect.value}</b></span>
-              ${driveLink}
+        aiBubble.innerHTML = `
+          <div class="bubble-avatar">✨</div>
+          <div class="ai-card">
+            <div class="ai-image-hero">
+              <img src="${data.dataUrl}" alt="${prompt}" />
+            </div>
+            <div class="ai-meta-bar">
+              <div style="display: flex; gap: 6px;">
+                <span class="tag-pill">${ratioDropdown.value}</span>
+                <span class="tag-pill">${modelDropdown.value}</span>
+              </div>
+              ${driveBadge}
             </div>
           </div>
         `;
 
-        const generatedImg = aiMsg.querySelector("img");
-        generatedImg.addEventListener("click", () => {
+        const imgEl = aiBubble.querySelector("img");
+        imgEl.addEventListener("click", () => {
           const driveUrl = data.driveResult?.driveFileId
             ? `https://drive.google.com/file/d/${data.driveResult.driveFileId}/view`
             : "#";
-          openLightbox(data.dataUrl, driveUrl);
+          openModal(data.dataUrl, driveUrl);
         });
 
         // Trigger real-time library refresh
-        loadDriveFiles();
+        fetchDriveFiles();
 
       } catch (err) {
-        aiMsg.innerHTML = `
-          <div class="ai-content" style="color: #ef4444; font-size: 0.85rem;">
-            ⚠️ <b>Generation Error:</b> ${err.message}
+        aiBubble.innerHTML = `
+          <div class="bubble-avatar">⚠️</div>
+          <div class="ai-card" style="padding: 14px; color: #f87171; font-size: 0.85rem;">
+            <b>Error:</b> ${err.message}
           </div>
         `;
       } finally {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatScroller.scrollTop = chatScroller.scrollHeight;
       }
     }
 
-    sendBtn.addEventListener("click", handleSend);
-    chatInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleSend();
+    sendPromptBtn.addEventListener("click", handleGenerate);
+    promptInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        handleGenerate();
+      }
     });
 
-    loadDriveFiles();
+    fetchDriveFiles();
   </script>
 </body>
 </html>
