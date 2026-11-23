@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Gemini & Imagen AI Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -812,12 +815,12 @@
         files.forEach(file => {
           const item = document.createElement("div");
           item.className = "gallery-item";
-          const thumbUrl = `https://lh3.googleusercontent.com/u/0/d/${file.id}=w500`;
-          const driveUrl = `https://drive.google.com/file/d/${file.id}/view`;
+          const thumbUrl = file.thumbnailLink ? file.thumbnailLink.replace(/=s\d+/, "=s600") : `https://drive.google.com/thumbnail?id=${file.id}&sz=w600`;
+          const driveUrl = file.webViewLink || `https://drive.google.com/file/d/${file.id}/view`;
 
           item.innerHTML = `
             <div class="item-thumbnail">
-              <img src="${thumbUrl}" alt="${file.name}" loading="lazy" />
+              <img src="${thumbUrl}" alt="${file.name}" loading="lazy" onerror="this.src='https://drive.google.com/thumbnail?id=${file.id}&sz=w600'" />
             </div>
             <div class="item-info">
               <div class="item-title" title="${file.name}">${file.name}</div>

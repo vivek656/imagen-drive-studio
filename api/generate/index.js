@@ -86,6 +86,30 @@ async function generateFreeImage(prompt, aspectRatio, model = "flux") {
   return buffer.toString("base64");
 }
 
+async function getOrCreateGalleryFolder(drive) {
+  try {
+    const listRes = await drive.files.list({
+      q: "name = 'Imagen-AI-Gallery' and mimeType = 'application/vnd.google-apps.folder' and trashed = false",
+      fields: "files(id, name)",
+      spaces: "drive"
+    });
+    if (listRes.data.files && listRes.data.files.length > 0) {
+      return listRes.data.files[0].id;
+    }
+    const createRes = await drive.files.create({
+      resource: {
+        name: "Imagen-AI-Gallery",
+        mimeType: "application/vnd.google-apps.folder"
+      },
+      fields: "id, name"
+    });
+    return createRes.data.id;
+  } catch (err) {
+    console.error("Error finding or creating folder:", err.message);
+    return null;
+  }
+}
+
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.writeHead(405, { "Content-Type": "application/json" });
@@ -111,22 +135,28 @@ export default async function handler(req, res) {
 
       let driveResult = null;
       const cookies = parseCookies(req);
-      const userTokens = {
-        access_token: cookies.gdrive_access_token,
-        refresh_token: cookies.gdrive_refresh_token
-      };
+      const effectiveRefreshToken = cookies.gdrive_refresh_token || process.env.GOOGLE_REFRESH_TOKEN;
+      const effectiveAccessToken = cookies.gdrive_access_token;
 
-      if (uploadToDrive && (userTokens.access_token || userTokens.refresh_token)) {
+      if (uploadToDrive && (effectiveRefreshToken || effectiveAccessToken)) {
         try {
-          const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID || "1RpfZGzJ0aDTQOEQKOpwT5wpPb1RYDMIY";
           const oauth2Client = new google.auth.OAuth2(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET
           );
-          oauth2Client.setCredentials(userTokens);
-          const drive = google.drive({ version: "v3", auth: oauth2Client });
+          oauth2Client.setCredentials({
+            access_token: effectiveAccessToken,
+            refresh_token: effectiveRefreshToken
+          });
 
-          const fileMetadata = { name: `ai_${Date.now()}.jpg`, parents: [folderId] };
+          const drive = google.drive({ version: "v3", auth: oauth2Client });
+          const folderId = await getOrCreateGalleryFolder(drive);
+
+          const fileMetadata = {
+            name: `ai_${Date.now()}.jpg`,
+            ...(folderId ? { parents: [folderId] } : {})
+          };
+
           const mediaStream = new Readable();
           mediaStream.push(Buffer.from(imageBytes, "base64"));
           mediaStream.push(null);
@@ -134,7 +164,7 @@ export default async function handler(req, res) {
           const file = await drive.files.create({
             resource: fileMetadata,
             media: { mimeType: "image/jpeg", body: mediaStream },
-            fields: "id, name"
+            fields: "id, name, webViewLink, thumbnailLink"
           });
 
           try {
@@ -144,13 +174,24 @@ export default async function handler(req, res) {
             });
           } catch (_) {}
 
-          driveResult = { success: true, driveFileId: file.data.id, folderId };
+          driveResult = {
+            success: true,
+            driveFileId: file.data.id,
+            folderId,
+            webViewLink: file.data.webViewLink
+          };
         } catch (driveErr) {
+          console.error("Drive upload error in handler:", driveErr);
           driveResult = { success: false, error: driveErr.message };
         }
+      } else {
+        driveResult = { success: false, reason: "Drive not connected. Please click Connect Drive." };
       }
 
-      res.writeHead(200, { "Content-Type": "application/json" });
+      res.writeHead(200, {
+        "Content-Type": "application/json",
+        "Cache-Control": "no-cache, no-store, must-revalidate"
+      });
       res.end(JSON.stringify({
         success: true,
         dataUrl: `data:image/jpeg;base64,${imageBytes}`,
