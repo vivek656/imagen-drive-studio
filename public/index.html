@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Imagen 3 AI Studio & Drive Gallery</title>
+  <title>Imagen AI Studio & Drive Gallery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #090d16;
-      --card-bg: rgba(22, 30, 49, 0.8);
+      --bg: #0b0f19;
+      --card-bg: #141b2b;
       --card-border: rgba(255, 255, 255, 0.08);
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --accent: #38bdf8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --bubble-user: #27273a;
-      --bubble-ai: #141b2d;
+      --bubble-user: #232738;
+      --bubble-ai: #161e31;
     }
 
     * {
@@ -29,61 +29,67 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    body {
-      background: radial-gradient(circle at top center, #17153b 0%, var(--bg) 80%);
-      color: var(--text);
-      height: 100vh;
+    html, body {
+      height: 100%;
       height: 100dvh;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
     }
 
-    /* Top Navigation Bar */
+    /* Header */
     header {
-      padding: 0.75rem 1.5rem;
+      height: 60px;
+      padding: 0 1.5rem;
       border-bottom: 1px solid var(--card-border);
-      backdrop-filter: blur(16px);
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(12px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      z-index: 50;
-      background: rgba(9, 13, 22, 0.85);
       flex-shrink: 0;
+      z-index: 50;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .logo-badge {
       background: linear-gradient(135deg, #6366f1, #a855f7);
       width: 36px;
       height: 36px;
-      border-radius: 9px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.05rem;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+      font-size: 1.1rem;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
     }
 
     .brand h1 {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
-      letter-spacing: -0.3px;
     }
 
-    /* Mobile-only view toggle pills */
+    /* Mobile view toggle (hidden on desktop) */
     .mobile-view-toggle {
-      display: flex;
-      background: rgba(15, 23, 42, 0.7);
+      display: none;
+      background: rgba(15, 23, 42, 0.8);
       padding: 3px;
       border-radius: 10px;
       border: 1px solid var(--card-border);
+    }
+
+    @media (max-width: 1023px) {
+      .mobile-view-toggle {
+        display: flex;
+      }
     }
 
     .tab-btn {
@@ -95,124 +101,97 @@
       font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
     }
 
     .tab-btn.active {
       background: var(--primary);
       color: #fff;
-      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
     }
 
-    /* On Desktop (>= 1024px), hide mobile toggle tabs */
-    @media (min-width: 1024px) {
-      .mobile-view-toggle {
-        display: none;
-      }
-    }
-
-    /* Drive status indicator */
     .drive-status {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
     }
 
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
+      box-shadow: 0 0 10px #f59e0b;
     }
 
     .auth-btn {
       background: #6366f1;
       color: white;
       border: none;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 0.75rem;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
       font-weight: 700;
       cursor: pointer;
     }
 
     .disconnect-btn {
-      background: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.15);
       color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 0.72rem;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 600;
       cursor: pointer;
     }
 
-    /* Main Responsive Container */
+    /* Main Grid Layout */
     main {
       flex: 1;
-      display: flex;
-      position: relative;
+      display: grid;
+      grid-template-columns: 560px 1fr;
       overflow: hidden;
-      width: 100%;
+      min-height: 0;
     }
 
-    /* DESKTOP SPLIT-SCREEN LAYOUT (>= 1024px) */
-    @media (min-width: 1024px) {
-      main {
-        display: grid;
-        grid-template-columns: 520px 1fr;
-      }
-
-      .pane {
-        display: flex !important;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-      }
-
-      #chatPane {
-        border-right: 1px solid var(--card-border);
-      }
-    }
-
-    /* MOBILE SINGLE-PANE VIEW (< 1024px) */
     @media (max-width: 1023px) {
+      main {
+        display: flex;
+        flex-direction: column;
+      }
       .pane {
-        display: none;
+        display: none !important;
         width: 100%;
         height: 100%;
       }
-
       .pane.active {
-        display: flex;
+        display: flex !important;
       }
     }
 
-    /* Chat Pane Styling */
-    .chat-pane-wrapper {
+    /* Left Pane: Chat Studio */
+    #chatPane {
+      border-right: 1px solid var(--card-border);
       display: flex;
       flex-direction: column;
       height: 100%;
-      width: 100%;
-      position: relative;
+      min-height: 0;
+      background: rgba(11, 15, 25, 0.5);
     }
 
     .chat-messages {
       flex: 1;
       overflow-y: auto;
-      padding: 1rem 1rem 5.5rem 1rem;
+      padding: 1.25rem 1.25rem 1rem 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 18px;
       scroll-behavior: smooth;
+      min-height: 0;
     }
 
     .message {
-      max-width: 90%;
+      max-width: 92%;
       display: flex;
       flex-direction: column;
       animation: fadeIn 0.2s ease-out;
@@ -227,9 +206,9 @@
       align-self: flex-end;
       background: var(--bubble-user);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 14px;
+      padding: 10px 16px;
       border-radius: 16px 16px 4px 16px;
-      font-size: 0.92rem;
+      font-size: 0.95rem;
     }
 
     .message.ai {
@@ -239,33 +218,36 @@
       border-radius: 16px 16px 16px 4px;
       overflow: hidden;
       width: 100%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
 
+    /* FULL UNCROPPED IMAGE DISPLAY */
     .ai-img-wrapper {
       position: relative;
       width: 100%;
       background: #000;
-      min-height: 200px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      overflow: hidden;
     }
 
     .ai-img-wrapper img {
       width: 100%;
       height: auto;
-      max-height: 420px;
+      max-height: 520px;
       object-fit: contain;
       display: block;
+      border-bottom: 1px solid var(--card-border);
     }
 
     .ai-content {
-      padding: 12px 14px;
+      padding: 12px 16px;
     }
 
     .ai-prompt {
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 500;
       color: #cbd5e1;
       margin-bottom: 8px;
@@ -276,13 +258,13 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      font-size: 0.75rem;
+      font-size: 0.78rem;
     }
 
     .action-pill {
-      background: rgba(255, 255, 255, 0.06);
+      background: rgba(255, 255, 255, 0.08);
       color: var(--accent);
-      padding: 5px 12px;
+      padding: 6px 12px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 600;
@@ -294,48 +276,54 @@
     }
 
     .action-pill:hover {
-      background: rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.15);
       color: #fff;
     }
 
-    /* Fixed Bottom Input Bar */
-    .chat-input-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(9, 13, 22, 0.95);
-      backdrop-filter: blur(16px);
+    /* Modern Dropdown & Chip Controls (Clean UX, No Infinite Horizontal Scrolling) */
+    .chat-controls-wrapper {
+      background: #111726;
       border-top: 1px solid var(--card-border);
-      padding: 8px 12px 14px 12px;
-      z-index: 40;
+      padding: 12px 16px;
+      flex-shrink: 0;
     }
 
-    .pill-options {
+    .controls-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .control-select-group {
       display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 8px;
-      scrollbar-width: none;
+      flex-direction: column;
+      gap: 3px;
     }
-    .pill-options::-webkit-scrollbar { display: none; }
 
-    .option-chip {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
+    .control-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       color: var(--text-muted);
-      padding: 4px 10px;
-      border-radius: 14px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
     }
 
-    .option-chip.active {
-      background: rgba(99, 102, 241, 0.25);
-      border-color: var(--primary);
-      color: #fff;
+    .styled-select {
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .styled-select:focus {
+      border-color: var(--accent);
     }
 
     .input-row {
@@ -346,12 +334,12 @@
 
     .input-box {
       flex: 1;
-      background: rgba(15, 23, 42, 0.8);
+      background: rgba(15, 23, 42, 0.9);
       border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 10px 16px;
+      border-radius: 12px;
+      padding: 12px 16px;
       color: var(--text);
-      font-size: 0.92rem;
+      font-size: 0.95rem;
       outline: none;
     }
 
@@ -360,47 +348,58 @@
     }
 
     .send-btn {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
       background: linear-gradient(135deg, #6366f1, #3b82f6);
       border: none;
       color: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       cursor: pointer;
       flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      transition: transform 0.15s;
     }
 
-    /* Library Viewer Gallery Pane */
-    .gallery-pane-wrapper {
+    .send-btn:hover {
+      transform: scale(1.03);
+    }
+
+    /* Right Pane: Google Drive Gallery */
+    #galleryPane {
       display: flex;
       flex-direction: column;
       height: 100%;
-      width: 100%;
-      padding: 1.25rem 1.5rem;
-      overflow-y: auto;
+      min-height: 0;
+      background: var(--bg);
     }
 
-    .gallery-topbar {
+    .gallery-header {
+      padding: 1rem 1.75rem;
+      border-bottom: 1px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 1.25rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--card-border);
+      flex-shrink: 0;
+    }
+
+    .gallery-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      min-height: 0;
     }
 
     .grid-container {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
     }
 
-    @media (min-width: 1400px) {
+    @media (min-width: 1440px) {
       .grid-container {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 20px;
@@ -408,25 +407,24 @@
     }
 
     .grid-card {
-      background: rgba(15, 23, 42, 0.65);
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
       border-radius: 14px;
       overflow: hidden;
       cursor: pointer;
-      position: relative;
       transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
     }
 
     .grid-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
-      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+      border-color: rgba(99, 102, 241, 0.5);
     }
 
     .grid-thumb {
       width: 100%;
       aspect-ratio: 1 / 1;
-      background: #0f172a;
+      background: #000;
       overflow: hidden;
     }
 
@@ -438,7 +436,7 @@
     }
 
     .grid-card:hover .grid-thumb img {
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     .grid-info {
@@ -467,7 +465,7 @@
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, 0.94);
-      backdrop-filter: blur(24px);
+      backdrop-filter: blur(20px);
       z-index: 100;
       flex-direction: column;
       align-items: center;
@@ -494,11 +492,11 @@
     }
 
     .lightbox-img {
-      max-width: 90%;
+      max-width: 92%;
       max-height: 82vh;
       border-radius: 12px;
       object-fit: contain;
-      box-shadow: 0 14px 50px rgba(0, 0, 0, 0.85);
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.9);
     }
 
     .lightbox-bar {
@@ -510,7 +508,6 @@
 </head>
 <body>
 
-  <!-- Top App Navigation -->
   <header>
     <div class="brand">
       <div class="logo-badge">I3</div>
@@ -519,82 +516,94 @@
       </div>
     </div>
 
-    <!-- Mobile-Only Toggle Switcher -->
+    <!-- Mobile Switcher -->
     <div class="mobile-view-toggle">
-      <button class="tab-btn active" id="tabChat" data-view="chatPane">💬 Chat</button>
-      <button class="tab-btn" id="tabGallery" data-view="galleryPane">🖼️ Library</button>
+      <button class="tab-btn active" id="tabChat">💬 Chat</button>
+      <button class="tab-btn" id="tabGallery">🖼️ Library</button>
     </div>
 
     <!-- Google Drive Sync Status -->
     <div class="drive-status" id="driveStatus">
       <span class="dot" id="statusDot"></span>
-      <span id="statusText" style="display: none; @media(min-width: 640px){ display: inline; }">Drive</span>
-      <button id="connectDriveBtn" class="auth-btn" style="display: none;">Connect Drive</button>
+      <span id="statusText">Checking Drive...</span>
+      <button id="connectDriveBtn" class="auth-btn" style="display: none;">🔗 Connect Drive</button>
       <button id="disconnectDriveBtn" class="disconnect-btn" style="display: none;">Disconnect</button>
     </div>
   </header>
 
   <main>
-    <!-- LEFT PANE: Chat Stream Generation -->
+    <!-- LEFT: Chat Generation Studio -->
     <section class="pane active" id="chatPane">
-      <div class="chat-pane-wrapper">
-        <div class="chat-messages" id="chatMessages">
-          <div class="message ai">
-            <div class="ai-content">
-              <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to Imagen 3 Studio ✨</div>
-              <div style="font-size: 0.82rem; color: var(--text-muted);">
-                Describe any image idea below. Generated images sync in real-time to your Google Drive library on the right!
-              </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message ai">
+          <div class="ai-content">
+            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to AI Studio ✨</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              Type any prompt below. Images generate in high-res and automatically backup to your Google Drive library on the right!
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Chat Input Bar -->
-        <div class="chat-input-bar">
-          <div class="pill-options">
-            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Model:</span>
-            <button class="option-chip active" data-type="model" data-val="flux">⚡ FLUX.1</button>
-            <button class="option-chip" data-type="model" data-val="flux-realism">✨ Photoreal</button>
-            <button class="option-chip" data-type="model" data-val="flux-anime">🎨 Anime</button>
-            <button class="option-chip" data-type="model" data-val="turbo">🚀 SDXL Turbo</button>
-
-            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Style:</span>
-            <button class="option-chip active" data-type="style" data-val="editorial">📸 Editorial</button>
-            <button class="option-chip" data-type="style" data-val="cinematic">🎬 Cinematic</button>
-            <button class="option-chip" data-type="style" data-val="fineart">🖼️ Fine Art</button>
-            <button class="option-chip" data-type="style" data-val="noir">🌑 Noir</button>
-            <button class="option-chip" data-type="style" data-val="raw">⚡ Raw</button>
-
-            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Ratio:</span>
-            <button class="option-chip active" data-type="ratio" data-val="1:1">1:1</button>
-            <button class="option-chip" data-type="ratio" data-val="16:9">16:9</button>
-            <button class="option-chip" data-type="ratio" data-val="9:16">9:16</button>
-            <button class="option-chip" data-type="ratio" data-val="4:3">4:3</button>
+      <!-- Controls & Input Bar (Clean Dropdowns, No Endless Scrolling) -->
+      <div class="chat-controls-wrapper">
+        <div class="controls-grid">
+          <div class="control-select-group">
+            <label class="control-label">AI Model</label>
+            <select id="modelSelect" class="styled-select">
+              <option value="flux">⚡ FLUX.1 (Flagship)</option>
+              <option value="flux-realism">✨ Photoreal</option>
+              <option value="flux-anime">🎨 Anime / Concept</option>
+              <option value="turbo">🚀 SDXL Turbo</option>
+            </select>
           </div>
 
-          <div class="input-row">
-            <input type="text" id="chatInput" class="input-box" placeholder="Ask Imagen to generate an image..." enterkeyhint="send" />
-            <button id="sendBtn" class="send-btn">➔</button>
+          <div class="control-select-group">
+            <label class="control-label">Aesthetic Style</label>
+            <select id="styleSelect" class="styled-select">
+              <option value="editorial">📸 Editorial (Leibovitz)</option>
+              <option value="cinematic">🎬 Cinematic (Villeneuve)</option>
+              <option value="fineart">🖼️ Fine Art</option>
+              <option value="noir">🌑 Noir</option>
+              <option value="raw">⚡ Raw (Unenhanced)</option>
+            </select>
           </div>
+
+          <div class="control-select-group">
+            <label class="control-label">Aspect Ratio</label>
+            <select id="ratioSelect" class="styled-select">
+              <option value="1:1">Square (1:1)</option>
+              <option value="16:9">Landscape (16:9)</option>
+              <option value="9:16">Portrait / Mobile (9:16)</option>
+              <option value="4:3">Standard (4:3)</option>
+              <option value="3:4">Tall (3:4)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <input type="text" id="chatInput" class="input-box" placeholder="Describe the image you want to create..." enterkeyhint="send" />
+          <button id="sendBtn" class="send-btn">➔</button>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT PANE: Google Drive Library Viewer -->
+    <!-- RIGHT: Google Drive Gallery -->
     <section class="pane" id="galleryPane">
-      <div class="gallery-pane-wrapper">
-        <div class="gallery-topbar">
-          <div>
-            <h2 style="font-size: 1.1rem; font-weight: 700;">Google Drive Library</h2>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Folder: Imagen-AI-Gallery</div>
-          </div>
-          <div style="display: flex; gap: 8px;">
-            <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Open Drive</a>
-            <button id="refreshGridBtn" class="action-pill" style="cursor: pointer;">🔄 Refresh</button>
-          </div>
+      <div class="gallery-header">
+        <div>
+          <h2 style="font-size: 1.1rem; font-weight: 700;">Google Drive Library</h2>
+          <div style="font-size: 0.75rem; color: var(--text-muted);">Saved in: Imagen-AI-Gallery</div>
         </div>
+        <div style="display: flex; gap: 8px;">
+          <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Open Folder in Drive</a>
+          <button id="refreshGridBtn" class="action-pill" style="cursor: pointer;">🔄 Refresh</button>
+        </div>
+      </div>
+
+      <div class="gallery-content">
         <div class="grid-container" id="gridContainer">
-          <!-- Populated from Drive -->
+          <!-- Populated from Google Drive -->
         </div>
       </div>
     </section>
@@ -611,10 +620,6 @@
   </div>
 
   <script>
-    let selectedModel = "flux";
-    let selectedStyle = "editorial";
-    let selectedRatio = "1:1";
-
     const tabChat = document.getElementById("tabChat");
     const tabGallery = document.getElementById("tabGallery");
     const chatPane = document.getElementById("chatPane");
@@ -622,8 +627,12 @@
     const chatMessages = document.getElementById("chatMessages");
     const chatInput = document.getElementById("chatInput");
     const sendBtn = document.getElementById("sendBtn");
+    const modelSelect = document.getElementById("modelSelect");
+    const styleSelect = document.getElementById("styleSelect");
+    const ratioSelect = document.getElementById("ratioSelect");
     const gridContainer = document.getElementById("gridContainer");
     const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
     const connectDriveBtn = document.getElementById("connectDriveBtn");
     const disconnectDriveBtn = document.getElementById("disconnectDriveBtn");
     const driveFolderLink = document.getElementById("driveFolderLink");
@@ -635,7 +644,7 @@
     const lightboxDriveLink = document.getElementById("lightboxDriveLink");
     const lightboxDownload = document.getElementById("lightboxDownload");
 
-    // Mobile View Toggle Handlers
+    // Mobile Switchers
     tabChat.addEventListener("click", () => {
       tabChat.classList.add("active");
       tabGallery.classList.remove("active");
@@ -651,24 +660,10 @@
       loadDriveFiles();
     });
 
-    // Style & Ratio Selectors
-    document.querySelectorAll(".option-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const type = chip.getAttribute("data-type");
-        const val = chip.getAttribute("data-val");
-        document.querySelectorAll(`.option-chip[data-type="${type}"]`).forEach(c => c.classList.remove("active"));
-        chip.classList.add("active");
-        if (type === "model") selectedModel = val;
-        if (type === "style") selectedStyle = val;
-        if (type === "ratio") selectedRatio = val;
-      });
-    });
-
-    // Connect & Disconnect buttons
     connectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/login");
     disconnectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/logout");
 
-    // Load Drive Files & Check Status
+    // Fetch Google Drive Files
     async function loadDriveFiles() {
       try {
         const res = await fetch("/api/drive/files");
@@ -676,12 +671,14 @@
 
         if (data.connected) {
           statusDot.style.background = "#34d399";
-          statusDot.style.boxShadow = "0 0 8px #34d399";
+          statusDot.style.boxShadow = "0 0 10px #34d399";
+          statusText.textContent = "Google Drive Connected";
           connectDriveBtn.style.display = "none";
           disconnectDriveBtn.style.display = "inline-block";
         } else {
           statusDot.style.background = "#f59e0b";
-          statusDot.style.boxShadow = "0 0 8px #f59e0b";
+          statusDot.style.boxShadow = "0 0 10px #f59e0b";
+          statusText.textContent = "Drive Not Connected";
           connectDriveBtn.style.display = "inline-block";
           disconnectDriveBtn.style.display = "none";
         }
@@ -692,7 +689,12 @@
 
         gridContainer.innerHTML = "";
         if (!data.files || data.files.length === 0) {
-          gridContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No images in Drive folder yet.</div>`;
+          gridContainer.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 60px 20px;">
+              <div style="font-size: 2rem; margin-bottom: 8px;">📂</div>
+              <div style="font-weight: 600;">No images in Drive folder yet</div>
+              <div style="font-size: 0.8rem; margin-top: 4px;">Connect Drive and generate an image to sync it here!</div>
+            </div>`;
           return;
         }
 
@@ -724,7 +726,6 @@
 
     refreshGridBtn.addEventListener("click", loadDriveFiles);
 
-    // Lightbox modal handler
     function openLightbox(imgSrc, driveUrl) {
       lightboxImg.src = imgSrc;
       lightboxDriveLink.href = driveUrl;
@@ -737,26 +738,24 @@
       if (e.target === lightbox) lightbox.classList.remove("active");
     });
 
-    // Send Generation Request (Chat Experience)
+    // Handle Generation
     async function handleSend() {
       const prompt = chatInput.value.trim();
       if (!prompt) return;
 
       chatInput.value = "";
 
-      // Append User message
       const userMsg = document.createElement("div");
       userMsg.className = "message user";
       userMsg.textContent = prompt;
       chatMessages.appendChild(userMsg);
 
-      // Append AI loading bubble
       const aiMsg = document.createElement("div");
       aiMsg.className = "message ai";
       aiMsg.innerHTML = `
         <div class="ai-content" style="display: flex; align-items: center; gap: 8px;">
           <div style="width: 14px; height: 14px; border: 2px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <span style="font-size: 0.82rem; color: var(--text-muted);">Generating with AI...</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Generating image with ${modelSelect.options[modelSelect.selectedIndex].text}...</span>
         </div>
       `;
       chatMessages.appendChild(aiMsg);
@@ -768,9 +767,9 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             prompt,
-            aspectRatio: selectedRatio,
-            style: selectedStyle,
-            model: selectedModel,
+            aspectRatio: ratioSelect.value,
+            style: styleSelect.value,
+            model: modelSelect.value,
             uploadToDrive: true
           })
         });
@@ -780,7 +779,7 @@
 
         const driveLink = data.driveResult?.driveFileId
           ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="action-pill">📂 Saved to Drive ↗</a>`
-          : `<span style="font-size: 0.72rem; color: #f59e0b;">(Drive Sync Pending)</span>`;
+          : `<span style="font-size: 0.72rem; color: #f59e0b;">(Saved Locally)</span>`;
 
         aiMsg.innerHTML = `
           <div class="ai-img-wrapper">
@@ -789,7 +788,7 @@
           <div class="ai-content">
             <div class="ai-prompt">${prompt}</div>
             <div class="ai-actions">
-              <span>Ratio: <b>${selectedRatio}</b> · Style: <b>${selectedStyle}</b></span>
+              <span><b>${ratioSelect.value}</b> · <b>${modelSelect.value}</b></span>
               ${driveLink}
             </div>
           </div>
@@ -803,12 +802,12 @@
           openLightbox(data.dataUrl, driveUrl);
         });
 
-        // Auto-refresh gallery on the right
+        // Trigger real-time library refresh
         loadDriveFiles();
 
       } catch (err) {
         aiMsg.innerHTML = `
-          <div class="ai-content" style="color: #ef4444; font-size: 0.82rem;">
+          <div class="ai-content" style="color: #ef4444; font-size: 0.85rem;">
             ⚠️ <b>Generation Error:</b> ${err.message}
           </div>
         `;
@@ -822,7 +821,6 @@
       if (e.key === "Enter") handleSend();
     });
 
-    // Initial check
     loadDriveFiles();
   </script>
 </body>
