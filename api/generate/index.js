@@ -46,41 +46,50 @@ function enhancePrompt(rawPrompt, style = "editorial") {
   return `${preset.prefix}${rawPrompt}${preset.suffix}`;
 }
 
-async function generateImageWithGemini(ai, prompt, aspectRatio) {
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-image",
-      contents: prompt,
-      config: { responseModalities: ["IMAGE", "TEXT"] },
-    });
-    const candidate = response.candidates?.[0];
-    if (candidate?.content?.parts) {
-      for (const part of candidate.content.parts) {
-        if (part.inlineData?.data) {
-          return part.inlineData.data;
+async function generateImageWithGemini(apiKey, prompt, aspectRatio) {
+  const modelsToTry = [
+    "gemini-2.5-flash-image",
+    "gemini-3.1-flash-image",
+    "gemini-3.1-flash-lite-image"
+  ];
+
+  let lastError = null;
+
+  for (const model of modelsToTry) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseModalities: ["IMAGE", "TEXT"]
+        }
+      };
+
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        lastError = data.error?.message || `HTTP ${resp.status}`;
+        continue;
+      }
+
+      const parts = data.candidates?.[0]?.content?.parts || [];
+      for (const p of parts) {
+        if (p.inlineData?.data) {
+          return p.inlineData.data;
         }
       }
+    } catch (err) {
+      lastError = err.message;
     }
-  } catch (_) {}
-
-  try {
-    const result = await ai.models.generateImages({
-      model: "imagen-3.0-generate-002",
-      prompt: prompt,
-      config: {
-        numberOfImages: 1,
-        outputMimeType: "image/jpeg",
-        aspectRatio: aspectRatio,
-        personGeneration: "ALLOW_ADULT",
-      },
-    });
-    const bytes = result.generatedImages?.[0]?.image?.imageBytes;
-    if (bytes) return bytes;
-  } catch (err) {
-    throw new Error(err.message || "Failed to generate image with Gemini API");
   }
 
-  throw new Error("No image data returned from Gemini API");
+  throw new Error(lastError || "Could not generate image. Check Gemini API key rate limits.");
 }
 
 export default async function handler(req, res) {
@@ -110,9 +119,8 @@ export default async function handler(req, res) {
         return;
       }
 
-      const ai = new GoogleGenAI({ apiKey: effectiveKey });
       const enhancedPrompt = enhancePrompt(prompt, style);
-      const imageBytes = await generateImageWithGemini(ai, enhancedPrompt, aspectRatio);
+      const imageBytes = await generateImageWithGemini(effectiveKey, enhancedPrompt, aspectRatio);
 
       let driveResult = null;
       const cookies = parseCookies(req);
