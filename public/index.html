@@ -552,7 +552,13 @@
         <!-- Chat Input Bar -->
         <div class="chat-input-bar">
           <div class="pill-options">
-            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Style:</span>
+            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Model:</span>
+            <button class="option-chip active" data-type="model" data-val="flux">⚡ FLUX.1</button>
+            <button class="option-chip" data-type="model" data-val="flux-realism">✨ Photoreal</button>
+            <button class="option-chip" data-type="model" data-val="flux-anime">🎨 Anime</button>
+            <button class="option-chip" data-type="model" data-val="turbo">🚀 SDXL Turbo</button>
+
+            <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Style:</span>
             <button class="option-chip active" data-type="style" data-val="editorial">📸 Editorial</button>
             <button class="option-chip" data-type="style" data-val="cinematic">🎬 Cinematic</button>
             <button class="option-chip" data-type="style" data-val="fineart">🖼️ Fine Art</button>
@@ -605,6 +611,7 @@
   </div>
 
   <script>
+    let selectedModel = "flux";
     let selectedStyle = "editorial";
     let selectedRatio = "1:1";
 
@@ -651,6 +658,7 @@
         const val = chip.getAttribute("data-val");
         document.querySelectorAll(`.option-chip[data-type="${type}"]`).forEach(c => c.classList.remove("active"));
         chip.classList.add("active");
+        if (type === "model") selectedModel = val;
         if (type === "style") selectedStyle = val;
         if (type === "ratio") selectedRatio = val;
       });
@@ -748,7 +756,7 @@
       aiMsg.innerHTML = `
         <div class="ai-content" style="display: flex; align-items: center; gap: 8px;">
           <div style="width: 14px; height: 14px; border: 2px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-          <span style="font-size: 0.82rem; color: var(--text-muted);">Generating image with Imagen 3...</span>
+          <span style="font-size: 0.82rem; color: var(--text-muted);">Generating with AI...</span>
         </div>
       `;
       chatMessages.appendChild(aiMsg);
@@ -762,6 +770,7 @@
             prompt,
             aspectRatio: selectedRatio,
             style: selectedStyle,
+            model: selectedModel,
             uploadToDrive: true
           })
         });

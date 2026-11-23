@@ -56,13 +56,20 @@ function getDimensions(aspectRatio) {
   }
 }
 
-async function generateFreeImage(prompt, aspectRatio) {
+async function generateFreeImage(prompt, aspectRatio, model = "flux") {
   const { width, height } = getDimensions(aspectRatio);
   const encodedPrompt = encodeURIComponent(prompt);
   const seed = Math.floor(Math.random() * 1000000);
 
-  // High-performance free FLUX.1 model inference
-  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&seed=${seed}&nologo=true`;
+  const modelMap = {
+    "flux": "flux",
+    "flux-realism": "flux-realism",
+    "flux-anime": "flux-anime",
+    "turbo": "turbo"
+  };
+  const targetModel = modelMap[model] || "flux";
+
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=${targetModel}&seed=${seed}&nologo=true`;
 
   const response = await fetch(imageUrl, {
     headers: {
@@ -91,7 +98,7 @@ export default async function handler(req, res) {
   req.on("end", async () => {
     try {
       const data = JSON.parse(body || "{}");
-      const { prompt, aspectRatio = "1:1", uploadToDrive = true, style = "editorial" } = data;
+      const { prompt, aspectRatio = "1:1", uploadToDrive = true, style = "editorial", model = "flux" } = data;
 
       if (!prompt) {
         res.writeHead(400, { "Content-Type": "application/json" });
@@ -100,7 +107,7 @@ export default async function handler(req, res) {
       }
 
       const enhancedPrompt = enhancePrompt(prompt, style);
-      const imageBytes = await generateFreeImage(enhancedPrompt, aspectRatio);
+      const imageBytes = await generateFreeImage(enhancedPrompt, aspectRatio, model);
 
       let driveResult = null;
       const cookies = parseCookies(req);
