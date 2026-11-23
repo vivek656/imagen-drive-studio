@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import { google } from "googleapis";
 import { Readable } from "node:stream";
 
@@ -17,24 +16,20 @@ function parseCookies(req) {
 function enhancePrompt(rawPrompt, style = "editorial") {
   const stylePresets = {
     editorial: {
-      prefix: "Award-winning editorial photograph for a high-end fashion magazine, shot by Annie Leibovitz. ",
-      suffix: ". Ultra-detailed skin texture, Hasselblad medium format, natural volumetric lighting, shallow depth of field, professional color grading, intimate composition, fine art photography aesthetic, 8K resolution.",
+      prefix: "Award-winning editorial photograph for high-end magazine, Annie Leibovitz style. ",
+      suffix: ", Hasselblad medium format, 85mm lens, natural volumetric lighting, shallow depth of field, 8K ultra-detailed skin and textures",
     },
     cinematic: {
-      prefix: "Cinematic still from a high-budget drama film, directed by Denis Villeneuve, cinematography by Roger Deakins. ",
-      suffix: ". Anamorphic lens flare, dramatic chiaroscuro lighting, filmic color palette, atmospheric haze, intimate framing, 35mm film grain, IMAX quality, emotionally evocative composition.",
+      prefix: "Cinematic film still, 35mm motion picture, Denis Villeneuve aesthetic. ",
+      suffix: ", anamorphic lens flare, dramatic chiaroscuro lighting, atmospheric haze, 8K photorealism",
     },
     fineart: {
-      prefix: "Museum-quality fine art photograph exhibited at the Venice Biennale, inspired by the works of Helmut Newton and Peter Lindbergh. ",
-      suffix: ". Masterful use of light and shadow, classical composition, oil-painting-like skin tones, gallery-print quality, intimate and bold aesthetic, printed on archival paper, 8K ultra-resolution.",
-    },
-    renaissance: {
-      prefix: "Classical Renaissance oil painting in the style of Caravaggio and Botticelli, displayed at the Uffizi Gallery. ",
-      suffix: ". Dramatic tenebrism lighting, rich jewel-tone palette, anatomically masterful, oil on canvas texture, gilded frame museum piece, intimate classical beauty, ultra-detailed brushwork.",
+      prefix: "Museum gallery fine art masterpiece photograph. ",
+      suffix: ", masterpiece composition, soft gallery lighting, subtle tones, award winning",
     },
     noir: {
-      prefix: "Film noir styled dramatic portrait, inspired by classic Hollywood glamour photography of George Hurrell. ",
-      suffix: ". High-contrast black and white with selective warm tones, dramatic single-source key light, smoky atmosphere, intimate and mysterious mood, sharp studio-quality detail, 8K.",
+      prefix: "Classic Hollywood film noir portrait. ",
+      suffix: ", dramatic high contrast black and white lighting, single key light, smoky atmosphere",
     },
     raw: {
       prefix: "",
@@ -46,50 +41,42 @@ function enhancePrompt(rawPrompt, style = "editorial") {
   return `${preset.prefix}${rawPrompt}${preset.suffix}`;
 }
 
-async function generateImageWithGemini(apiKey, prompt, aspectRatio) {
-  const modelsToTry = [
-    "gemini-2.5-flash-image",
-    "gemini-3.1-flash-image",
-    "gemini-3.1-flash-lite-image"
-  ];
+function getDimensions(aspectRatio) {
+  switch (aspectRatio) {
+    case "16:9":
+      return { width: 1280, height: 720 };
+    case "9:16":
+      return { width: 720, height: 1280 };
+    case "4:3":
+      return { width: 1024, height: 768 };
+    case "3:4":
+      return { width: 768, height: 1024 };
+    default:
+      return { width: 1024, height: 1024 };
+  }
+}
 
-  let lastError = null;
+async function generateFreeImage(prompt, aspectRatio) {
+  const { width, height } = getDimensions(aspectRatio);
+  const encodedPrompt = encodeURIComponent(prompt);
+  const seed = Math.floor(Math.random() * 1000000);
 
-  for (const model of modelsToTry) {
-    try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-      const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseModalities: ["IMAGE", "TEXT"]
-        }
-      };
+  // High-performance free FLUX.1 model inference
+  const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=${width}&height=${height}&model=flux&seed=${seed}&nologo=true`;
 
-      const resp = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await resp.json();
-
-      if (!resp.ok) {
-        lastError = data.error?.message || `HTTP ${resp.status}`;
-        continue;
-      }
-
-      const parts = data.candidates?.[0]?.content?.parts || [];
-      for (const p of parts) {
-        if (p.inlineData?.data) {
-          return p.inlineData.data;
-        }
-      }
-    } catch (err) {
-      lastError = err.message;
+  const response = await fetch(imageUrl, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
     }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Inference error: HTTP ${response.status}`);
   }
 
-  throw new Error(lastError || "Could not generate image. Check Gemini API key rate limits.");
+  const arrayBuffer = await response.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  return buffer.toString("base64");
 }
 
 export default async function handler(req, res) {
@@ -104,7 +91,7 @@ export default async function handler(req, res) {
   req.on("end", async () => {
     try {
       const data = JSON.parse(body || "{}");
-      const { prompt, aspectRatio = "1:1", uploadToDrive = true, apiKey, style = "editorial" } = data;
+      const { prompt, aspectRatio = "1:1", uploadToDrive = true, style = "editorial" } = data;
 
       if (!prompt) {
         res.writeHead(400, { "Content-Type": "application/json" });
@@ -112,15 +99,8 @@ export default async function handler(req, res) {
         return;
       }
 
-      const effectiveKey = apiKey || process.env.GEMINI_API_KEY;
-      if (!effectiveKey) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "GEMINI_API_KEY is not set." }));
-        return;
-      }
-
       const enhancedPrompt = enhancePrompt(prompt, style);
-      const imageBytes = await generateImageWithGemini(effectiveKey, enhancedPrompt, aspectRatio);
+      const imageBytes = await generateFreeImage(enhancedPrompt, aspectRatio);
 
       let driveResult = null;
       const cookies = parseCookies(req);
@@ -139,7 +119,7 @@ export default async function handler(req, res) {
           oauth2Client.setCredentials(userTokens);
           const drive = google.drive({ version: "v3", auth: oauth2Client });
 
-          const fileMetadata = { name: `img_${Date.now()}.jpg`, parents: [folderId] };
+          const fileMetadata = { name: `ai_${Date.now()}.jpg`, parents: [folderId] };
           const mediaStream = new Readable();
           mediaStream.push(Buffer.from(imageBytes, "base64"));
           mediaStream.push(null);
