@@ -464,8 +464,9 @@
     </div>
 
     <div class="drive-status" id="driveStatus">
-      <span class="dot"></span>
-      <span>Connected to Google Drive: <b>Imagen-AI-Gallery</b></span>
+      <span class="dot" id="statusDot" style="background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
+      <span id="statusText">Checking Google Drive...</span>
+      <button id="connectDriveBtn" style="display: none; background: #6366f1; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 8px;">🔗 Connect Drive</button>
     </div>
   </header>
 
@@ -574,6 +575,13 @@
     const driveFolderLink = document.getElementById("driveFolderLink");
     const enhancedPromptBox = document.getElementById("enhancedPromptBox");
     const enhancedPromptText = document.getElementById("enhancedPromptText");
+    const statusDot = document.getElementById("statusDot");
+    const statusText = document.getElementById("statusText");
+    const connectDriveBtn = document.getElementById("connectDriveBtn");
+
+    connectDriveBtn.addEventListener("click", () => {
+      window.location.href = "/api/auth/login";
+    });
 
     // Aspect ratio selector
     document.querySelectorAll(".ratio-btn").forEach(btn => {
@@ -599,6 +607,18 @@
         const res = await fetch("/api/drive/files");
         const data = await res.json();
         
+        if (data.connected) {
+          statusDot.style.background = "#34d399";
+          statusDot.style.boxShadow = "0 0 8px #34d399";
+          statusText.innerHTML = `Connected to Google Drive: <b>Imagen-AI-Gallery</b>`;
+          connectDriveBtn.style.display = "none";
+        } else {
+          statusDot.style.background = "#f59e0b";
+          statusDot.style.boxShadow = "0 0 8px #f59e0b";
+          statusText.innerHTML = `Not connected to Google Drive`;
+          connectDriveBtn.style.display = "inline-block";
+        }
+
         if (data.folderId) {
           driveFolderLink.href = `https://drive.google.com/drive/folders/${data.folderId}`;
         }
