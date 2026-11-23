@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Imagen 3 Studio & Google Drive Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Imagen 3 AI Studio & Drive Gallery</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #090d16;
-      --card-bg: rgba(22, 30, 49, 0.85);
-      --card-border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(22, 30, 49, 0.9);
+      --card-border: rgba(255, 255, 255, 0.08);
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --accent: #38bdf8;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --success: #10b981;
-      --danger: #ef4444;
+      --bubble-user: #27273a;
+      --bubble-ai: #141b2d;
     }
 
     * {
@@ -26,333 +26,74 @@
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
-      background: radial-gradient(circle at top center, #1e1b4b 0%, var(--bg) 60%);
+      background: radial-gradient(circle at top center, #17153b 0%, var(--bg) 80%);
       color: var(--text);
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
     }
 
+    /* Top Navigation Bar */
     header {
-      padding: 1.25rem 2rem;
+      padding: 0.75rem 1rem;
       border-bottom: 1px solid var(--card-border);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(16px);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      position: sticky;
-      top: 0;
       z-index: 50;
-      background: rgba(9, 13, 22, 0.7);
+      background: rgba(9, 13, 22, 0.85);
+      flex-shrink: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     .logo-badge {
       background: linear-gradient(135deg, #6366f1, #a855f7);
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+      font-size: 1rem;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
 
     .brand h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      background: linear-gradient(to right, #fff, #94a3b8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .drive-status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.875rem;
-      background: rgba(16, 185, 129, 0.1);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      padding: 6px 14px;
-      border-radius: 20px;
-      color: #34d399;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #34d399;
-      box-shadow: 0 0 8px #34d399;
-    }
-
-    main {
-      flex: 1;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 2rem;
-      display: grid;
-      grid-template-columns: 460px 1fr;
-      gap: 2rem;
-    }
-
-    @media (max-width: 1024px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 1.75rem;
-      backdrop-filter: blur(16px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-
-    .card-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 1.25rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .form-group {
-      margin-bottom: 1.25rem;
-    }
-
-    label {
-      display: block;
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: var(--text-muted);
-    }
-
-    textarea, input, select {
-      width: 100%;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      color: var(--text);
-      font-size: 0.95rem;
-      transition: all 0.2s;
-    }
-
-    textarea:focus, input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 110px;
-    }
-
-    .ratio-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-
-    .ratio-btn {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      padding: 8px 0;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .ratio-btn.active {
-      background: rgba(99, 102, 241, 0.2);
-      border-color: var(--primary);
-      color: #fff;
-    }
-
-    .style-btn {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      color: var(--text-muted);
-      padding: 10px 4px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .style-btn.active {
-      background: rgba(168, 85, 247, 0.2);
-      border-color: #a855f7;
-      color: #fff;
-    }
-
-    .enhanced-prompt-box {
-      margin-top: 10px;
-      padding: 10px 12px;
-      background: rgba(15, 23, 42, 0.5);
-      border: 1px solid rgba(168, 85, 247, 0.3);
-      border-radius: 8px;
-      font-size: 0.72rem;
-      color: #c4b5fd;
-      max-height: 100px;
-      overflow-y: auto;
-      display: none;
-    }
-
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-      padding: 10px 14px;
-      background: rgba(15, 23, 42, 0.4);
-      border-radius: 10px;
-      border: 1px solid var(--card-border);
-    }
-
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
-    }
-
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: .3s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .3s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--primary);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(20px);
-    }
-
-    .btn-generate {
-      width: 100%;
-      background: linear-gradient(135deg, #6366f1, #3b82f6);
-      color: white;
-      border: none;
-      padding: 14px;
-      border-radius: 12px;
       font-size: 1rem;
       font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
-      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: -0.3px;
+    }
+
+    /* Tabs (Chat Studio vs Drive Gallery) */
+    .view-toggle {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      background: rgba(15, 23, 42, 0.7);
+      padding: 3px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
     }
 
-    .btn-generate:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
-    }
-
-    .btn-generate:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    /* Result Preview */
-    .preview-box {
-      margin-top: 1.5rem;
-      border-radius: 12px;
-      overflow: hidden;
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px dashed var(--card-border);
-      min-height: 240px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .preview-box img {
-      max-width: 100%;
-      max-height: 400px;
-      display: block;
-      object-fit: contain;
-    }
-
-    .status-badge {
-      position: absolute;
-      bottom: 12px;
-      left: 12px;
-      right: 12px;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(8px);
-      padding: 8px 12px;
+    .tab-btn {
+      padding: 6px 14px;
       border-radius: 8px;
-      font-size: 0.8rem;
-      border: 1px solid var(--card-border);
-    }
-
-    /* Gallery Panel */
-    .gallery-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.25rem;
-    }
-
-    .btn-refresh {
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--card-border);
+      border: none;
+      background: transparent;
       color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
+      font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -360,269 +101,519 @@
       transition: all 0.2s;
     }
 
-    .btn-refresh:hover {
+    .tab-btn.active {
+      background: var(--primary);
       color: #fff;
-      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
     }
 
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-      max-height: calc(100vh - 220px);
-      overflow-y: auto;
-      padding-right: 6px;
-    }
-
-    .gallery-card {
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      overflow: hidden;
-      transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
-    }
-
-    .gallery-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-      border-color: rgba(99, 102, 241, 0.4);
-    }
-
-    .gallery-thumb {
-      width: 100%;
-      height: 180px;
-      background: #0b1120;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gallery-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .gallery-info {
-      padding: 10px 12px;
-    }
-
-    .gallery-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-bottom: 4px;
-    }
-
-    .gallery-meta {
-      font-size: 0.72rem;
-      color: var(--text-muted);
+    /* Drive status indicator */
+    .drive-status {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
     }
 
-    .drive-link {
-      color: var(--accent);
-      text-decoration: none;
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+    }
+
+    .auth-btn {
+      background: #6366f1;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
       font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .disconnect-btn {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* VIEW 1: Chat Stream */
+    .view-container {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .view-container.active {
+      display: flex;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 1rem 5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .message {
+      max-width: 88%;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--bubble-user);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 14px;
+      border-radius: 16px 16px 4px 16px;
+      font-size: 0.92rem;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+      background: var(--bubble-ai);
+      border: 1px solid var(--card-border);
+      border-radius: 16px 16px 16px 4px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 520px;
+    }
+
+    .ai-img-wrapper {
+      position: relative;
+      width: 100%;
+      background: #000;
+      min-height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .ai-img-wrapper img {
+      width: 100%;
+      height: auto;
+      max-height: 480px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .ai-content {
+      padding: 12px 14px;
+    }
+
+    .ai-prompt {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    .ai-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.75rem;
+    }
+
+    .action-pill {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--accent);
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-decoration: none;
       font-weight: 600;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      margin-top: 6px;
     }
 
-    .drive-link:hover {
-      text-decoration: underline;
+    /* Fixed Bottom Chat Input Bar */
+    .chat-input-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(9, 13, 22, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--card-border);
+      padding: 8px 12px 14px 12px;
+      z-index: 40;
     }
 
-    .spinner {
-      border: 3px solid rgba(255, 255, 255, 0.1);
-      border-top-color: #fff;
+    .pill-options {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+    .pill-options::-webkit-scrollbar { display: none; }
+
+    .option-chip {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .option-chip.active {
+      background: rgba(99, 102, 241, 0.25);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .input-box {
+      flex: 1;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 10px 16px;
+      color: var(--text);
+      font-size: 0.92rem;
+      outline: none;
+    }
+
+    .input-box:focus {
+      border-color: var(--accent);
+    }
+
+    .send-btn {
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      animation: spin 0.8s linear infinite;
+      background: linear-gradient(135deg, #6366f1, #3b82f6);
+      border: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    /* VIEW 2: Drive Gallery Grid & Library Viewer */
+    .gallery-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+
+    .gallery-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .grid-container {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 16px;
+      }
+    }
+
+    .grid-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .grid-thumb {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      background: #0f172a;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .grid-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.2s;
+    }
+
+    .grid-card:hover .grid-thumb img {
+      transform: scale(1.05);
+    }
+
+    .grid-info {
+      padding: 8px 10px;
+    }
+
+    .grid-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .grid-meta {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Fullscreen Lightbox / Modal for Library Viewing */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      font-size: 1.4rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .lightbox-img {
+      max-width: 95%;
+      max-height: 80vh;
+      border-radius: 10px;
+      object-fit: contain;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    }
+
+    .lightbox-bar {
+      margin-top: 14px;
+      display: flex;
+      gap: 12px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Top App Navigation -->
   <header>
     <div class="brand">
       <div class="logo-badge">I3</div>
-      <div>
-        <h1>Imagen 3 & Google Drive Studio</h1>
-      </div>
+      <h1>Imagen AI</h1>
     </div>
 
+    <!-- View Switcher -->
+    <div class="view-toggle">
+      <button class="tab-btn active" id="tabChat" data-view="chatView">💬 Chat</button>
+      <button class="tab-btn" id="tabGallery" data-view="galleryView">🖼️ Library</button>
+    </div>
+
+    <!-- Drive Connection Badge -->
     <div class="drive-status" id="driveStatus">
-      <span class="dot" id="statusDot" style="background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
-      <span id="statusText">Checking Google Drive...</span>
-      <button id="connectDriveBtn" style="display: none; background: #6366f1; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 8px;">🔗 Connect Drive</button>
-      <button id="disconnectDriveBtn" style="display: none; background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 8px;">Disconnect</button>
+      <span class="dot" id="statusDot"></span>
+      <button id="connectDriveBtn" class="auth-btn" style="display: none;">Connect</button>
+      <button id="disconnectDriveBtn" class="disconnect-btn" style="display: none;">Exit</button>
     </div>
   </header>
 
   <main>
-    <!-- Left: Generator Form -->
-    <section class="card">
-      <div class="card-title">
-        <span>Generate Image</span>
-        <span style="font-size: 0.75rem; color: #a5b4fc; background: rgba(99,102,241,0.15); padding: 4px 8px; border-radius: 6px;">Imagen 3 (Free Tier)</span>
-      </div>
-
-      <div class="form-group">
-        <label for="apiKey">Gemini API Key (Optional if set in environment)</label>
-        <input type="password" id="apiKey" placeholder="AIzaSy... (Leave empty to use server default)">
-      </div>
-
-      <div class="form-group">
-        <label for="prompt">Prompt Description</label>
-        <textarea id="prompt" placeholder="e.g. A futuristic glass greenhouse in a glowing bioluminescent forest at night, cinematic lighting, 8k"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label>Aspect Ratio</label>
-        <div class="ratio-grid">
-          <button type="button" class="ratio-btn active" data-ratio="1:1">1:1</button>
-          <button type="button" class="ratio-btn" data-ratio="16:9">16:9</button>
-          <button type="button" class="ratio-btn" data-ratio="9:16">9:16</button>
-          <button type="button" class="ratio-btn" data-ratio="4:3">4:3</button>
-          <button type="button" class="ratio-btn" data-ratio="3:4">3:4</button>
+    <!-- VIEW 1: Chat Stream Mode -->
+    <section class="view-container active" id="chatView">
+      <div class="chat-messages" id="chatMessages">
+        <!-- Welcome Message -->
+        <div class="message ai">
+          <div class="ai-content">
+            <div style="font-weight: 700; font-size: 0.95rem; margin-bottom: 4px;">Welcome to Imagen 3 Studio ✨</div>
+            <div style="font-size: 0.82rem; color: var(--text-muted);">
+              Type any visual concept below. Images are generated with Imagen 3 and automatically backed up to your Google Drive gallery!
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="form-group">
-        <label>AI Style Enhancement</label>
-        <div class="ratio-grid" style="grid-template-columns: repeat(3, 1fr);">
-          <button type="button" class="style-btn active" data-style="editorial">📸 Editorial</button>
-          <button type="button" class="style-btn" data-style="cinematic">🎬 Cinematic</button>
-          <button type="button" class="style-btn" data-style="fineart">🖼️ Fine Art</button>
-          <button type="button" class="style-btn" data-style="renaissance">🏛️ Renaissance</button>
-          <button type="button" class="style-btn" data-style="noir">🌑 Noir</button>
-          <button type="button" class="style-btn" data-style="raw">⚡ Raw (No Enhance)</button>
+      <!-- Bottom Input Controls -->
+      <div class="chat-input-bar">
+        <div class="pill-options">
+          <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin-right: 2px;">Style:</span>
+          <button class="option-chip active" data-type="style" data-val="editorial">📸 Editorial</button>
+          <button class="option-chip" data-type="style" data-val="cinematic">🎬 Cinematic</button>
+          <button class="option-chip" data-type="style" data-val="fineart">🖼️ Fine Art</button>
+          <button class="option-chip" data-type="style" data-val="noir">🌑 Noir</button>
+          <button class="option-chip" data-type="style" data-val="raw">⚡ Raw</button>
+
+          <span style="font-size: 0.72rem; color: var(--text-muted); align-self: center; margin: 0 4px 0 8px;">Ratio:</span>
+          <button class="option-chip active" data-type="ratio" data-val="1:1">1:1</button>
+          <button class="option-chip" data-type="ratio" data-val="16:9">16:9</button>
+          <button class="option-chip" data-type="ratio" data-val="9:16">9:16</button>
+          <button class="option-chip" data-type="ratio" data-val="4:3">4:3</button>
         </div>
-        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 6px;">Style wraps your prompt with professional artistic framing for higher quality output.</div>
-      </div>
 
-      <div class="toggle-row">
-        <div>
-          <div style="font-size: 0.9rem; font-weight: 600;">Save to Google Drive</div>
-          <div style="font-size: 0.75rem; color: var(--text-muted);">Sync directly to 'Imagen-AI-Gallery' folder</div>
+        <div class="input-row">
+          <input type="text" id="chatInput" class="input-box" placeholder="Ask Imagen to generate an image..." enterkeyhint="send" />
+          <button id="sendBtn" class="send-btn">➔</button>
         </div>
-        <label class="switch">
-          <input type="checkbox" id="syncDrive" checked>
-          <span class="slider"></span>
-        </label>
-      </div>
-
-      <button id="generateBtn" class="btn-generate">
-        <span id="btnText">✨ Generate with Imagen 3</span>
-      </button>
-
-      <div class="preview-box" id="previewBox">
-        <span style="color: var(--text-muted); font-size: 0.85rem;" id="placeholderText">Generated image will appear here</span>
-        <img id="previewImg" style="display: none;" alt="Preview" />
-        <div class="status-badge" id="statusBadge" style="display: none;"></div>
-      </div>
-      <div class="enhanced-prompt-box" id="enhancedPromptBox">
-        <strong style="color: #a78bfa;">🧠 Enhanced Prompt Sent:</strong><br>
-        <span id="enhancedPromptText"></span>
       </div>
     </section>
 
-    <!-- Right: Google Drive Gallery -->
-    <section class="card">
-      <div class="gallery-header">
-        <div class="card-title" style="margin: 0;">
-          Google Drive Synced Gallery
+    <!-- VIEW 2: Library Grid Viewer Mode -->
+    <section class="view-container" id="galleryView">
+      <div class="gallery-view">
+        <div class="gallery-topbar">
+          <div style="font-size: 0.9rem; font-weight: 700;">Google Drive Synced Library</div>
+          <div style="display: flex; gap: 8px;">
+            <a id="driveFolderLink" href="https://drive.google.com" target="_blank" class="action-pill">📂 Drive Folder</a>
+            <button id="refreshGridBtn" class="action-pill" style="border:none; cursor:pointer;">🔄 Refresh</button>
+          </div>
         </div>
-        <div style="display: flex; gap: 8px;">
-          <a id="driveFolderLink" href="https://drive.google.com/drive/folders/1RpfZGzJ0aDTQOEQKOpwT5wpPb1RYDMIY" target="_blank" class="btn-refresh" style="text-decoration: none;">
-            📂 Open in Google Drive
-          </a>
-          <button class="btn-refresh" id="refreshBtn">🔄 Refresh</button>
+        <div class="grid-container" id="gridContainer">
+          <!-- Populated from Drive -->
         </div>
-      </div>
-
-      <div class="gallery-grid" id="galleryGrid">
-        <!-- Gallery cards populated via API -->
       </div>
     </section>
   </main>
 
+  <!-- Fullscreen Modal / Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">×</button>
+    <img class="lightbox-img" id="lightboxImg" alt="Enlarged" />
+    <div class="lightbox-bar">
+      <a id="lightboxDriveLink" href="#" target="_blank" class="action-pill" style="font-size: 0.85rem; padding: 8px 14px;">📂 View in Google Drive</a>
+      <a id="lightboxDownload" href="#" download="generated.jpg" class="action-pill" style="font-size: 0.85rem; padding: 8px 14px;">⬇️ Download</a>
+    </div>
+  </div>
+
   <script>
-    let selectedRatio = "1:1";
     let selectedStyle = "editorial";
-    const apiKeyInput = document.getElementById("apiKey");
-    const promptInput = document.getElementById("prompt");
-    const syncDriveInput = document.getElementById("syncDrive");
-    const generateBtn = document.getElementById("generateBtn");
-    const btnText = document.getElementById("btnText");
-    const previewBox = document.getElementById("previewBox");
-    const previewImg = document.getElementById("previewImg");
-    const placeholderText = document.getElementById("placeholderText");
-    const statusBadge = document.getElementById("statusBadge");
-    const galleryGrid = document.getElementById("galleryGrid");
-    const refreshBtn = document.getElementById("refreshBtn");
-    const driveFolderLink = document.getElementById("driveFolderLink");
-    const enhancedPromptBox = document.getElementById("enhancedPromptBox");
-    const enhancedPromptText = document.getElementById("enhancedPromptText");
+    let selectedRatio = "1:1";
+
+    const tabChat = document.getElementById("tabChat");
+    const tabGallery = document.getElementById("tabGallery");
+    const chatView = document.getElementById("chatView");
+    const galleryView = document.getElementById("galleryView");
+    const chatMessages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+    const gridContainer = document.getElementById("gridContainer");
     const statusDot = document.getElementById("statusDot");
-    const statusText = document.getElementById("statusText");
     const connectDriveBtn = document.getElementById("connectDriveBtn");
     const disconnectDriveBtn = document.getElementById("disconnectDriveBtn");
+    const driveFolderLink = document.getElementById("driveFolderLink");
+    const refreshGridBtn = document.getElementById("refreshGridBtn");
 
-    connectDriveBtn.addEventListener("click", () => {
-      window.location.href = "/api/auth/login";
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightboxImg");
+    const lightboxClose = document.getElementById("lightboxClose");
+    const lightboxDriveLink = document.getElementById("lightboxDriveLink");
+    const lightboxDownload = document.getElementById("lightboxDownload");
+
+    // View Switching (Chat vs Library)
+    tabChat.addEventListener("click", () => {
+      tabChat.classList.add("active");
+      tabGallery.classList.remove("active");
+      chatView.classList.add("active");
+      galleryView.classList.remove("active");
     });
 
-    disconnectDriveBtn.addEventListener("click", () => {
-      window.location.href = "/api/auth/logout";
+    tabGallery.addEventListener("click", () => {
+      tabGallery.classList.add("active");
+      tabChat.classList.remove("active");
+      galleryView.classList.add("active");
+      chatView.classList.remove("active");
+      loadDriveFiles();
     });
 
-    // Aspect ratio selector
-    document.querySelectorAll(".ratio-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".ratio-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        selectedRatio = btn.getAttribute("data-ratio");
+    // Style & Ratio Selectors
+    document.querySelectorAll(".option-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const type = chip.getAttribute("data-type");
+        const val = chip.getAttribute("data-val");
+        document.querySelectorAll(`.option-chip[data-type="${type}"]`).forEach(c => c.classList.remove("active"));
+        chip.classList.add("active");
+        if (type === "style") selectedStyle = val;
+        if (type === "ratio") selectedRatio = val;
       });
     });
 
-    // Style selector
-    document.querySelectorAll(".style-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".style-btn").forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        selectedStyle = btn.getAttribute("data-style");
-      });
-    });
+    // Connect & Disconnect buttons
+    connectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/login");
+    disconnectDriveBtn.addEventListener("click", () => window.location.href = "/api/auth/logout");
 
-    // Fetch and display Google Drive Gallery
-    async function loadDriveGallery() {
+    // Load Drive Files & Check Status
+    async function loadDriveFiles() {
       try {
         const res = await fetch("/api/drive/files");
         const data = await res.json();
-        
+
         if (data.connected) {
           statusDot.style.background = "#34d399";
           statusDot.style.boxShadow = "0 0 8px #34d399";
-          statusText.innerHTML = `Connected to Google Drive: <b>Imagen-AI-Gallery</b>`;
           connectDriveBtn.style.display = "none";
           disconnectDriveBtn.style.display = "inline-block";
         } else {
           statusDot.style.background = "#f59e0b";
           statusDot.style.boxShadow = "0 0 8px #f59e0b";
-          statusText.innerHTML = `Not connected to Google Drive`;
           connectDriveBtn.style.display = "inline-block";
           disconnectDriveBtn.style.display = "none";
         }
@@ -631,107 +622,133 @@
           driveFolderLink.href = `https://drive.google.com/drive/folders/${data.folderId}`;
         }
 
-        galleryGrid.innerHTML = "";
+        gridContainer.innerHTML = "";
         if (!data.files || data.files.length === 0) {
-          galleryGrid.innerHTML = `<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;">No images in Google Drive folder yet. Generate your first image!</div>`;
+          gridContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 40px;">No images in Drive folder yet.</div>`;
           return;
         }
 
         data.files.forEach(file => {
           const card = document.createElement("div");
-          card.className = "gallery-card";
-          const viewUrl = `https://drive.google.com/file/d/${file.id}/view`;
+          card.className = "grid-card";
           const thumbUrl = `https://lh3.googleusercontent.com/u/0/d/${file.id}=w400`;
+          const viewUrl = `https://drive.google.com/file/d/${file.id}/view`;
 
           card.innerHTML = `
-            <div class="gallery-thumb">
-              <img src="${thumbUrl}" onerror="this.src='/generated/${file.name}'" alt="${file.name}" loading="lazy" />
+            <div class="grid-thumb">
+              <img src="${thumbUrl}" alt="${file.name}" loading="lazy" />
             </div>
-            <div class="gallery-info">
-              <div class="gallery-title" title="${file.name}">${file.name}</div>
-              <div class="gallery-meta">
-                <span>${file.size ? (parseInt(file.size)/1024).toFixed(0) + ' KB' : 'Drive File'}</span>
-                <span>${file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : ''}</span>
-              </div>
-              <a href="${viewUrl}" target="_blank" class="drive-link">
-                View in Drive ↗
-              </a>
+            <div class="grid-info">
+              <div class="grid-name">${file.name}</div>
+              <div class="grid-meta">${file.size ? (parseInt(file.size)/1024).toFixed(0) + ' KB' : 'Saved'}</div>
             </div>
           `;
-          galleryGrid.appendChild(card);
+          card.addEventListener("click", () => openLightbox(thumbUrl, viewUrl));
+          gridContainer.appendChild(card);
         });
       } catch (err) {
-        console.error("Gallery load error:", err);
+        console.error(err);
       }
     }
 
-    // Generate Button Click
-    generateBtn.addEventListener("click", async () => {
-      const prompt = promptInput.value.trim();
-      if (!prompt) {
-        alert("Please enter a prompt!");
-        return;
-      }
+    refreshGridBtn.addEventListener("click", loadDriveFiles);
 
-      generateBtn.disabled = true;
-      btnText.innerHTML = `<div class="spinner"></div> Generating with Imagen 3...`;
-      placeholderText.textContent = "Processing image request with Imagen 3...";
-      previewImg.style.display = "none";
-      statusBadge.style.display = "none";
+    // Lightbox modal handler
+    function openLightbox(imgSrc, driveUrl) {
+      lightboxImg.src = imgSrc;
+      lightboxDriveLink.href = driveUrl;
+      lightboxDownload.href = imgSrc;
+      lightbox.classList.add("active");
+    }
+
+    lightboxClose.addEventListener("click", () => lightbox.classList.remove("active"));
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) lightbox.classList.remove("active");
+    });
+
+    // Send Generation Request (Chat Experience)
+    async function handleSend() {
+      const prompt = chatInput.value.trim();
+      if (!prompt) return;
+
+      chatInput.value = "";
+
+      // Append User message
+      const userMsg = document.createElement("div");
+      userMsg.className = "message user";
+      userMsg.textContent = prompt;
+      chatMessages.appendChild(userMsg);
+
+      // Append AI loading bubble
+      const aiMsg = document.createElement("div");
+      aiMsg.className = "message ai";
+      aiMsg.innerHTML = `
+        <div class="ai-content" style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 14px; height: 14px; border: 2px solid #6366f1; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+          <span style="font-size: 0.82rem; color: var(--text-muted);">Generating image with Imagen 3...</span>
+        </div>
+      `;
+      chatMessages.appendChild(aiMsg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
 
       try {
-        const payload = {
-          prompt,
-          aspectRatio: selectedRatio,
-          style: selectedStyle,
-          uploadToDrive: syncDriveInput.checked,
-          apiKey: apiKeyInput.value.trim() || undefined
-        };
-
         const res = await fetch("/api/generate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            prompt,
+            aspectRatio: selectedRatio,
+            style: selectedStyle,
+            uploadToDrive: true
+          })
         });
 
         const data = await res.json();
-        if (!res.ok || data.error) {
-          throw new Error(data.error || "Generation failed");
-        }
+        if (!res.ok || data.error) throw new Error(data.error || "Generation failed");
 
-        previewImg.src = data.dataUrl || data.localUrl;
-        previewImg.style.display = "block";
-        placeholderText.style.display = "none";
+        const driveLink = data.driveResult?.driveFileId
+          ? `<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" class="action-pill">📂 Saved to Drive ↗</a>`
+          : `<span style="font-size: 0.72rem; color: #f59e0b;">(Drive Sync Pending)</span>`;
 
-        // Show the enhanced prompt that was actually sent
-        if (data.enhancedPrompt && data.style !== "raw") {
-          enhancedPromptText.textContent = data.enhancedPrompt;
-          enhancedPromptBox.style.display = "block";
-        } else {
-          enhancedPromptBox.style.display = "none";
-        }
+        aiMsg.innerHTML = `
+          <div class="ai-img-wrapper">
+            <img src="${data.dataUrl}" alt="Generated result" />
+          </div>
+          <div class="ai-content">
+            <div class="ai-prompt">${prompt}</div>
+            <div class="ai-actions">
+              <span>Ratio: <b>${selectedRatio}</b> · Style: <b>${selectedStyle}</b></span>
+              ${driveLink}
+            </div>
+          </div>
+        `;
 
-        let badgeContent = `✅ Generated successfully!`;
-        if (data.driveResult && data.driveResult.success) {
-          badgeContent += ` 🚀 Synced to Google Drive (<a href="https://drive.google.com/file/d/${data.driveResult.driveFileId}/view" target="_blank" style="color: #38bdf8;">View File</a>)`;
-        }
-        statusBadge.innerHTML = badgeContent;
-        statusBadge.style.display = "block";
-
-        // Refresh gallery
-        loadDriveGallery();
+        const generatedImg = aiMsg.querySelector("img");
+        generatedImg.addEventListener("click", () => {
+          const driveUrl = data.driveResult?.driveFileId
+            ? `https://drive.google.com/file/d/${data.driveResult.driveFileId}/view`
+            : "#";
+          openLightbox(data.dataUrl, driveUrl);
+        });
 
       } catch (err) {
-        alert("Error: " + err.message);
-        placeholderText.textContent = "Error generating image: " + err.message;
+        aiMsg.innerHTML = `
+          <div class="ai-content" style="color: #ef4444; font-size: 0.82rem;">
+            ⚠️ <b>Generation Error:</b> ${err.message}
+          </div>
+        `;
       } finally {
-        generateBtn.disabled = false;
-        btnText.innerHTML = `✨ Generate with Imagen 3`;
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       }
+    }
+
+    sendBtn.addEventListener("click", handleSend);
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSend();
     });
 
-    refreshBtn.addEventListener("click", loadDriveGallery);
-    loadDriveGallery();
+    // Initial check
+    loadDriveFiles();
   </script>
 </body>
 </html>
