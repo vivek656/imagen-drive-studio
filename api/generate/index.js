@@ -1,5 +1,7 @@
 import { google } from "googleapis";
 import { Readable } from "node:stream";
+import fs from "node:fs";
+import path from "node:path";
 
 function parseCookies(req) {
   const list = {};
@@ -208,6 +210,17 @@ export default async function handler(req, res) {
         driveResult = { success: false, reason: "Drive not connected. Please click Connect Drive." };
       }
 
+      let localPath = null;
+      try {
+        const genDir = path.join(process.cwd(), "public", "generated");
+        if (!fs.existsSync(genDir)) {
+          fs.mkdirSync(genDir, { recursive: true });
+        }
+        const fileName = `ai_${Date.now()}.jpg`;
+        fs.writeFileSync(path.join(genDir, fileName), Buffer.from(imageBytes, "base64"));
+        localPath = `/generated/${fileName}`;
+      } catch (_) {}
+
       res.writeHead(200, {
         "Content-Type": "application/json",
         "Cache-Control": "no-cache, no-store, must-revalidate"
@@ -215,6 +228,7 @@ export default async function handler(req, res) {
       res.end(JSON.stringify({
         success: true,
         dataUrl: `data:image/jpeg;base64,${imageBytes}`,
+        localPath,
         driveResult,
         prompt,
         enhancedPrompt,
