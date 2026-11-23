@@ -467,6 +467,7 @@
       <span class="dot" id="statusDot" style="background: #f59e0b; box-shadow: 0 0 8px #f59e0b;"></span>
       <span id="statusText">Checking Google Drive...</span>
       <button id="connectDriveBtn" style="display: none; background: #6366f1; color: white; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 8px;">🔗 Connect Drive</button>
+      <button id="disconnectDriveBtn" style="display: none; background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; margin-left: 8px;">Disconnect</button>
     </div>
   </header>
 
@@ -578,9 +579,14 @@
     const statusDot = document.getElementById("statusDot");
     const statusText = document.getElementById("statusText");
     const connectDriveBtn = document.getElementById("connectDriveBtn");
+    const disconnectDriveBtn = document.getElementById("disconnectDriveBtn");
 
     connectDriveBtn.addEventListener("click", () => {
       window.location.href = "/api/auth/login";
+    });
+
+    disconnectDriveBtn.addEventListener("click", () => {
+      window.location.href = "/api/auth/logout";
     });
 
     // Aspect ratio selector
@@ -612,11 +618,13 @@
           statusDot.style.boxShadow = "0 0 8px #34d399";
           statusText.innerHTML = `Connected to Google Drive: <b>Imagen-AI-Gallery</b>`;
           connectDriveBtn.style.display = "none";
+          disconnectDriveBtn.style.display = "inline-block";
         } else {
           statusDot.style.background = "#f59e0b";
           statusDot.style.boxShadow = "0 0 8px #f59e0b";
           statusText.innerHTML = `Not connected to Google Drive`;
           connectDriveBtn.style.display = "inline-block";
+          disconnectDriveBtn.style.display = "none";
         }
 
         if (data.folderId) {
