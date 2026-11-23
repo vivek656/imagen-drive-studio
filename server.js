@@ -11,6 +11,21 @@ const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Read .env if exists locally
+const envPath = path.join(__dirname, ".env");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf-8");
+  for (const line of envContent.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith("#")) {
+      const [k, ...v] = trimmed.split("=");
+      if (k && v.length) {
+        process.env[k.trim()] = v.join("=").trim();
+      }
+    }
+  }
+}
+
 const PORT = process.env.PORT || 3080;
 const PUBLIC_DIR = path.join(__dirname, "public");
 const GENERATED_DIR = path.join(PUBLIC_DIR, "generated");
@@ -24,7 +39,28 @@ if (!fs.existsSync(GENERATED_DIR)) {
 // Drive configuration
 let driveFolderId = process.env.GOOGLE_DRIVE_FOLDER_ID || "1RpfZGzJ0aDTQOEQKOpwT5wpPb1RYDMIY";
 
+// Store in-memory tokens for active web session
+let activeDriveTokens = null;
+
+function getOAuthClient(origin) {
+  const redirectUri = `${origin}/api/auth/callback`;
+  return new google.auth.OAuth2(
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+    redirectUri
+  );
+}
+
 function getDriveClient() {
+  if (activeDriveTokens) {
+    const oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
+    );
+    oauth2Client.setCredentials(activeDriveTokens);
+    return google.drive({ version: "v3", auth: oauth2Client });
+  }
+
   const clientId = process.env.GOOGLE_CLIENT_ID;
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
   const refreshToken = process.env.GOOGLE_REFRESH_TOKEN;
@@ -70,7 +106,7 @@ function enhancePrompt(rawPrompt, style = "editorial") {
   return `${preset.prefix}${rawPrompt}${preset.suffix}`;
 }
 
-// ─── Drive API Helpers (Dual Mode: googleapis SDK or gdrive CLI) ───
+// ─── Drive API Helpers ────────────────────────────────────────────
 async function listDriveFiles() {
   const drive = getDriveClient();
   if (drive) {
@@ -82,9 +118,12 @@ async function listDriveFiles() {
     });
     return res.data.files || [];
   } else {
-    // Fallback to local gdrive CLI
-    const { stdout } = await execAsync(`gdrive readonly ls ${driveFolderId} --json`);
-    return JSON.parse(stdout || "[]");
+    try {
+      const { stdout } = await execAsync(`gdrive readonly ls ${driveFolderId} --json`);
+      return JSON.parse(stdout || "[]");
+    } catch (_) {
+      return [];
+    }
   }
 }
 
@@ -135,9 +174,7 @@ async function uploadFileToDrive(filePath, fileName) {
   }
 }
 
-// ─── Image Generation Function (Supports both generate_content & generate_images) ───
 async function generateImageWithGemini(ai, prompt, aspectRatio) {
-  // Method 1: Try Gemini Image Generation via generate_content (gemini-2.5-flash-image)
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-image",
@@ -156,10 +193,9 @@ async function generateImageWithGemini(ai, prompt, aspectRatio) {
       }
     }
   } catch (err1) {
-    console.warn("generateContent model attempt failed:", err1.message);
+    console.warn("generateContent failed:", err1.message);
   }
 
-  // Method 2: Try Imagen 3 generateImages
   try {
     const result = await ai.models.generateImages({
       model: "imagen-3.0-generate-002",
@@ -177,7 +213,6 @@ async function generateImageWithGemini(ai, prompt, aspectRatio) {
       return imageBytes;
     }
   } catch (err2) {
-    console.warn("generateImages attempt failed:", err2.message);
     throw new Error(err2.message || "Failed to generate image with Gemini API");
   }
 
@@ -187,6 +222,7 @@ async function generateImageWithGemini(ai, prompt, aspectRatio) {
 const server = http.createServer(async (req, res) => {
   const parsedUrl = new URL(req.url, `http://${req.headers.host}`);
   const pathname = parsedUrl.pathname;
+  const origin = `http://${req.headers.host}`;
 
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
@@ -198,12 +234,60 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // OAuth Route 1: Initiate OAuth Login
+  if (pathname === "/api/auth/login") {
+    const oauth2 = getOAuthClient(origin);
+    const authUrl = oauth2.generateAuthUrl({
+      access_type: "offline",
+      scope: ["https://www.googleapis.com/auth/drive.file"],
+      prompt: "consent",
+    });
+    res.writeHead(302, { Location: authUrl });
+    res.end();
+    return;
+  }
+
+  // OAuth Route 2: Callback
+  if (pathname === "/api/auth/callback") {
+    const code = parsedUrl.searchParams.get("code");
+    if (!code) {
+      res.writeHead(302, { Location: "/?error=no_code" });
+      res.end();
+      return;
+    }
+    try {
+      const oauth2 = getOAuthClient(origin);
+      const { tokens } = await oauth2.getToken(code);
+      activeDriveTokens = tokens;
+      console.log("OAuth tokens received successfully!");
+      res.writeHead(302, { Location: "/?connected=true" });
+      res.end();
+    } catch (err) {
+      console.error("Token exchange failed:", err);
+      res.writeHead(302, { Location: `/?error=${encodeURIComponent(err.message)}` });
+      res.end();
+    }
+    return;
+  }
+
+  // Check Drive Connection Status
+  if (pathname === "/api/auth/status") {
+    const isConnected = !!(activeDriveTokens || process.env.GOOGLE_REFRESH_TOKEN);
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ connected: isConnected }));
+    return;
+  }
+
   // API 1: List Google Drive Gallery Files
   if (pathname === "/api/drive/files" && req.method === "GET") {
     try {
       const files = await listDriveFiles();
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ folderId: driveFolderId, files, mode: getDriveClient() ? "googleapis_sdk" : "gdrive_cli" }));
+      res.end(JSON.stringify({ 
+        folderId: driveFolderId, 
+        files, 
+        connected: !!(activeDriveTokens || getDriveClient()) 
+      }));
     } catch (err) {
       res.writeHead(500, { "Content-Type": "application/json" });
       res.end(JSON.stringify({ error: err.message }));
