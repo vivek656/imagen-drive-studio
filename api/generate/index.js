@@ -108,6 +108,21 @@ async function generateFreeImage(prompt, rawPrompt, aspectRatio, model = "flux")
     }
   });
 
+  // If rate limit 402 with retry time, handle smoothly
+  if (response.status === 402) {
+    try {
+      const errText = await response.clone().text();
+      const match = errText.match(/Retry after (\d+)s/);
+      const waitSec = match ? parseInt(match[1]) : 0;
+      if (waitSec > 0 && waitSec <= 20) {
+        await new Promise(r => setTimeout(r, (waitSec + 1) * 1000));
+        response = await fetch(imageUrl, {
+          headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" }
+        });
+      }
+    } catch (_) {}
+  }
+
   // Attempt 2: If enhanced prompt failed (e.g. 402/400), try clean raw prompt
   if (!response.ok && rawPrompt && prompt !== rawPrompt) {
     imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(rawPrompt)}?width=${width}&height=${height}&model=${targetModel}&seed=${seed}&nologo=true`;
@@ -118,9 +133,9 @@ async function generateFreeImage(prompt, rawPrompt, aspectRatio, model = "flux")
     });
   }
 
-  // Attempt 3: If still rejected, fallback to turbo model with raw prompt
+  // Attempt 3: If still rejected, fallback to clean endpoint with raw prompt
   if (!response.ok) {
-    imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(rawPrompt || prompt)}?width=${width}&height=${height}&model=turbo&seed=${seed}&nologo=true`;
+    imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(rawPrompt || prompt)}?width=${width}&height=${height}&nologo=true`;
     response = await fetch(imageUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
